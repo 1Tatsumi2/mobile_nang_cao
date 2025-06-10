@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentPage = 5000;
 
   final List<String> productImages = [
-    'assets/images/top_products/top_product_1.png',
+    'assets/images/top_products/top_product_1-removebg.png',
     'assets/images/top_products/top_product_2.png',
     'assets/images/top_products/top_product_3.png',
     'assets/images/top_products/top_product_4.png',
