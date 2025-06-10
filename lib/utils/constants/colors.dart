@@ -14,6 +14,7 @@ class TColors {
     end: Alignment(0.707, -0.707),
     colors: [Color(0xffff9a9e), Color(0xfffad0c4), Color(0xfffad0c4)],
   );
+  static const primaryGradient = [TColors.light,TColors.dark];
 
   // App Text Colors
   static const Color textPrimary = Color(0xFF333333);

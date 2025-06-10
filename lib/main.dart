@@ -3,6 +3,7 @@ import 'package:do_an_mobile/utils/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 
+
 /// ---------------- Entry point of Flutter App ----------------
 
 void main() {
@@ -21,6 +22,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,

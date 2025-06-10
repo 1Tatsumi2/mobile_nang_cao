@@ -4,9 +4,8 @@ import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 
 class TMaleShoesListProducts extends StatelessWidget {
+  final List<Map<String, dynamic>> products; // Sửa lại kiểu này!
   const TMaleShoesListProducts({super.key, required this.products});
-
-  final List<Map<String, String>> products;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +27,9 @@ class TMaleShoesListProducts extends StatelessWidget {
               image: product['image']!,
               name: product['name']!,
               price: '\$${product['price']}',
+              images: List<String>.from(
+                product['images'] ?? [],
+              ), // Thêm dòng này!
             );
           },
         ),
@@ -40,11 +42,13 @@ class _MaleProductCard extends StatefulWidget {
   final String image;
   final String name;
   final String price;
+  final List<String>? images;
 
   const _MaleProductCard({
     required this.image,
     required this.name,
     required this.price,
+    this.images, // Thêm trường này nếu cần truyền nhiều ảnh
   });
 
   @override
@@ -66,6 +70,7 @@ class _MaleProductCardState extends State<_MaleProductCard> {
                   image: widget.image,
                   name: widget.name,
                   price: widget.price,
+                  images: widget.images, // <-- Truyền thêm dòng này
                 ),
           ),
         );
