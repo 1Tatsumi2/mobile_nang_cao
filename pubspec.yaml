@@ -50,6 +50,7 @@ flutter:
     - assets/icons/
     - assets/images/category/
     - assets/images/top_products/
+    - assets/images/event/
 
   #-------------------- LOCAL FONTS --------------------
   fonts:
