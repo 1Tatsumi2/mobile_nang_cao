@@ -4,41 +4,26 @@ import 'package:do_an_mobile/common/widgets/filter_list/category_bar.dart';
 import 'package:do_an_mobile/features/shop/screens/products/male/widgets/male_banner.dart';
 import 'package:do_an_mobile/features/shop/screens/products/male/widgets/male_list_products.dart';
 import 'package:flutter/material.dart';
+import 'package:do_an_mobile/services/product_service.dart'; // Thêm import này
 
-class MaleProductsScreen extends StatelessWidget {
+class MaleProductsScreen extends StatefulWidget {
   const MaleProductsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Dummy data
-    final List<Map<String, dynamic>> products;
-    products = [
-      {
-        'image': 'assets/images/top_products/top_product_1-removebg.png',
-        'images': [
-          'assets/images/top_products/top_product_1.png',
-          'assets/images/top_products/top_product_1_1.png',
-        ],
-        'name': 'Elegant Heels',
-        'price': '1,950',
-      },
-      {
-        'image': 'assets/images/top_products/top_product_2.png',
-        'name': 'Classic Bag',
-        'price': '1,980',
-      },
-      {
-        'image': 'assets/images/top_products/top_product_3.png',
-        'name': 'Summer Sandals',
-        'price': '2,450',
-      },
-      {
-        'image': 'assets/images/top_products/top_product_4.png',
-        'name': 'Mini Handbag',
-        'price': '1,950',
-      },
-    ];
+  State<MaleProductsScreen> createState() => _MaleProductsScreenState();
+}
 
+class _MaleProductsScreenState extends State<MaleProductsScreen> {
+  late Future<List<dynamic>> _futureProducts;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureProducts = ProductService.fetchProducts(); // Gọi API
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -59,8 +44,28 @@ class MaleProductsScreen extends StatelessWidget {
               CategoryButton(label: 'Sort by'),
             ],
           ),
-          // 3. Grid sản phẩm
-          TMaleListProducts(products: products),
+          // Sử dụng FutureBuilder để lấy dữ liệu từ API
+          Expanded(
+            child: FutureBuilder<List<dynamic>>(
+              future: _futureProducts,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No products found.'));
+                }
+                final products = snapshot.data!;
+                final imageBaseUrl = 'http://localhost:5139/media/products/'; // Đổi thành IP backend của bạn
+
+                return TMaleListProducts(
+                  products: products.cast<Map<String, dynamic>>(),
+                  imageBaseUrl: imageBaseUrl,
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
