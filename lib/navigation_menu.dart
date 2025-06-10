@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:do_an_mobile/features/shop/screens/home/home.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_screen.dart';
 import 'package:do_an_mobile/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -125,6 +126,6 @@ class NavigationController extends GetxController {
     const HomeScreen(),
     Container(color: Colors.purple),
     Container(color: Colors.orange),
-    Container(color: Colors.blue),
+    const ProfileScreen(),
   ];
 }
