@@ -117,3 +117,18 @@ flutter:
         - asset: assets/fonts/Roboto-BoldItalic.ttf
           weight: 700
           style: italic
+
+    - family: Cinzel
+      fonts:
+        - asset: assets/fonts/Cinzel-Black.ttf
+          weight: 900
+        - asset: assets/fonts/Cinzel-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Cinzel-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Cinzel-Medium.ttf
+          weight: 200
+        - asset: assets/fonts/Cinzel-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Cinzel-SemiBold.ttf
+          weight: 600

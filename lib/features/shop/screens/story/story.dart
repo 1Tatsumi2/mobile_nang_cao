@@ -1,11 +1,12 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:do_an_mobile/features/shop/screens/story/widgets/event_1_screen.dart';
-import 'package:do_an_mobile/features/shop/screens/story/widgets/event_2_screen.dart';
-import 'package:do_an_mobile/features/shop/screens/story/widgets/event_3_screen.dart';
-import 'package:do_an_mobile/features/shop/screens/story/widgets/event_4_screen.dart';
-import 'package:do_an_mobile/features/shop/screens/story/widgets/event_5_screen.dart';
 import 'package:flutter/material.dart';
+
+import 'widgets/event_1_screen.dart';
+import 'widgets/event_2_screen.dart';
+import 'widgets/event_3_screen.dart';
+import 'widgets/event_4_screen.dart';
+import 'widgets/event_5_screen.dart';
 
 class StoryScreen extends StatelessWidget {
   const StoryScreen({super.key});
@@ -159,3 +160,4 @@ class StoryScreen extends StatelessWidget {
     );
   }
 }
+
