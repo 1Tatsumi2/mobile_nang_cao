@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class TSizes {
   // Padding and Margin Sizes
   static const double xs = 4.0;
@@ -16,6 +18,20 @@ class TSizes {
   static const double fontSizeSm = 14.0;
   static const double fontSizeMd = 16.0;
   static const double fontSizeLg = 18.0;
+  static const double fontSizeXLg = 20.0;
+
+  // Font Weight
+  static const FontWeight fontWeightBold = FontWeight.bold;
+  static const FontWeight fontWeightNormal = FontWeight.normal;
+  static const FontWeight fontWeightW100 = FontWeight.w100;
+  static const FontWeight fontWeightW200 = FontWeight.w200;
+  static const FontWeight fontWeightW300 = FontWeight.w300;
+  static const FontWeight fontWeightW400 = FontWeight.w400;
+  static const FontWeight fontWeightW500 = FontWeight.w500;
+  static const FontWeight fontWeightW600 = FontWeight.w600;
+  static const FontWeight fontWeightW700 = FontWeight.w700;
+  static const FontWeight fontWeightW800 = FontWeight.w800;
+  static const FontWeight fontWeightW900 = FontWeight.w900;
 
   // Button Sizes
   static const double buttonHeight = 18.0;
