@@ -19,11 +19,23 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
+  late final PageController _pageController;
   int currentIndex = 0;
   bool isFavorite = false;
 
-  List<String> get images =>
-      widget.images ?? [widget.image]; // Nếu không có danh sách thì dùng 1 ảnh
+  List<String> get images => widget.images ?? [widget.image];
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: currentIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +83,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 alignment: Alignment.center,
                 children: [
                   PageView.builder(
+                    controller: _pageController,
                     itemCount: images.length,
-                    controller: PageController(initialPage: currentIndex),
                     onPageChanged: (index) {
                       setState(() {
                         currentIndex = index;
@@ -81,12 +93,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     itemBuilder: (context, index) {
                       return Container(
                         width: double.infinity,
-                        color: const Color.fromARGB(
-                          255,
-                          231,
-                          231,
-                          231,
-                        ), // Khung nền màu rgb(231,231,231)                        alignment: Alignment.center,
+                        color: const Color(0xFFE7E7E7),
+                        alignment: Alignment.center,
                         child: Image.asset(
                           images[index],
                           fit: BoxFit.contain,
@@ -103,12 +111,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       child: IconButton(
                         icon: const Icon(Icons.arrow_back_ios, size: 28),
                         onPressed: () {
-                          setState(() {
-                            currentIndex = (currentIndex - 1).clamp(
-                              0,
-                              images.length - 1,
-                            );
-                          });
+                          _pageController.previousPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.ease,
+                          );
                         },
                       ),
                     ),
@@ -119,12 +125,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       child: IconButton(
                         icon: const Icon(Icons.arrow_forward_ios, size: 28),
                         onPressed: () {
-                          setState(() {
-                            currentIndex = (currentIndex + 1).clamp(
-                              0,
-                              images.length - 1,
-                            );
-                          });
+                          _pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.ease,
+                          );
                         },
                       ),
                     ),
@@ -160,7 +164,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   Text(
                     widget.price,
                     style: const TextStyle(
-                      color: Colors.pink,
+                      color: Colors.black,
                       fontWeight: FontWeight.w600,
                       fontSize: 20,
                     ),

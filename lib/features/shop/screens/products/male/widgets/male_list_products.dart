@@ -12,7 +12,6 @@ class TMaleListProducts extends StatelessWidget {
     required this.products,
     required this.imageBaseUrl,
   });
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -36,6 +35,9 @@ class TMaleListProducts extends StatelessWidget {
               image: imageUrl ?? '',
               name: product['name'] ?? '', // Lấy trực tiếp từ dữ liệu
               price: '\$${product['price']}',
+              images: List<String>.from(
+                product['images'] ?? [],
+              ), // Thêm dòng này!
             );
           },
         ),
@@ -48,11 +50,13 @@ class _MaleProductCard extends StatefulWidget {
   final String image;
   final String name;
   final String price;
+  final List<String>? images; // Thêm trường này nếu cần truyền nhiều ảnh
 
   const _MaleProductCard({
     required this.image,
     required this.name,
     required this.price,
+    this.images, // Thêm trường này nếu cần truyền nhiều ảnh
   });
 
   @override
@@ -74,6 +78,7 @@ class _MaleProductCardState extends State<_MaleProductCard> {
                   image: widget.image,
                   name: widget.name,
                   price: widget.price,
+                  images: widget.images, // <-- Truyền thêm dòng này
                 ),
           ),
         );
