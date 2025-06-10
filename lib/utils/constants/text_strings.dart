@@ -62,4 +62,13 @@ class TTexts {
       "Your Account Has Been Created Successfully";
   static const String yourAccountCreatedSubTitle =
       "Welcome to Your Ultimate Shopping Destination: Your account is Created, Unleash the Joy of Sealeam Online Shopping";
+
+// -- Wishlist
+  static const String wishlistTitle = "Your Wishlist";
+  static const String wishlistEmptyMessage = "Your wishlist is empty. Start adding items you love!";
+  static const String wishlistItemCount = " Items in your wishlist";
+  static const String removeFromWishlist = "Remove from Wishlist";
+  static const String addToCart = "Add to Cart";
+  static const String moveToCart = "Move to Cart";
+  static const String itemAddedToCart = "Item added to cart successfully!";
 }
