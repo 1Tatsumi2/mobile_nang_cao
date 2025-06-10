@@ -4,9 +4,14 @@ import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 
 class TMaleListProducts extends StatelessWidget {
-  const TMaleListProducts({super.key, required this.products});
+  final List<Map<String, dynamic>> products;
+  final String imageBaseUrl;
 
-  final List<Map<String, String>> products;
+  const TMaleListProducts({
+    super.key,
+    required this.products,
+    required this.imageBaseUrl,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +19,7 @@ class TMaleListProducts extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.zero,
         child: GridView.builder(
-          padding: EdgeInsets.zero, // Thêm dòng này!
+          padding: EdgeInsets.zero,
           itemCount: products.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
@@ -24,9 +29,12 @@ class TMaleListProducts extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             final product = products[index];
+            final imageUrl = product['image'] != null
+                ? '$imageBaseUrl${product['image']}'
+                : null;
             return _MaleProductCard(
-              image: product['image']!,
-              name: product['name']!,
+              image: imageUrl ?? '',
+              name: product['name'] ?? '', // Lấy trực tiếp từ dữ liệu
               price: '\$${product['price']}',
             );
           },
@@ -90,7 +98,7 @@ class _MaleProductCardState extends State<_MaleProductCard> {
                 children: [
                   SizedBox(
                     height: 120,
-                    child: Image.asset(widget.image, fit: BoxFit.contain),
+                    child: Image.network(widget.image, fit: BoxFit.contain),
                   ),
                   const SizedBox(height: 10),
                   Text(
