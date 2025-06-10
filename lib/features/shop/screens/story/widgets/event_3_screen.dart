@@ -58,7 +58,7 @@ class eventThree extends StatelessWidget {
                         ),
                         const Center(
                           child: Text(
-                            'At Triennale Milano, Creative Director Sabato De Sarno revealed the womenswear collection for Spring Summer 2025. Continuing his vision for the House, the collection embraced the beauty of ephermeral moments, drawing inspiration from instances in time.',
+                            'At Triennial Milano, Creative Director Sabato De Sarno revealed the womenswear collection for Spring Summer 2025. Continuing his vision for the House, the collection embraced the beauty of ephermeral moments, drawing inspiration from instances in time.',
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 16,
@@ -319,3 +319,4 @@ class eventThree extends StatelessWidget {
     );
   }
 }
+
