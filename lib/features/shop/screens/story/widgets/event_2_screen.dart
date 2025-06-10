@@ -137,7 +137,7 @@ class eventTwo extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        // Tiêu đề Season's Highlights
+                        // Tiu đề Season's Highlights
                         const Center(
                           child: Text(
                             'FALL WINTER 2025',
@@ -176,7 +176,7 @@ class eventTwo extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        // Tiêu đề Fall Winter 2025
+                        // Tiu đề Fall Winter 2025
                         const Center(
                           child: Text(
                             'A CLOSER LOOK',
@@ -215,7 +215,7 @@ class eventTwo extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        // Tiêu đề CLOSER LOOK
+                        // Tiu đề CLOSER LOOK
                         const Center(
                           child: Text(
                             'MAKEUP AT THE SHOWS',
@@ -253,7 +253,7 @@ class eventTwo extends StatelessWidget {
                             alignment: Alignment.center,
                           ),
                         ),
-                        const SizedBox(height: 24), // Tiêu đề BACKSTAGE
+                        const SizedBox(height: 24), // Tiu đề BACKSTAGE
                         const Center(
                           child: Text(
                             'FRIENDS OF THE HOUSE',

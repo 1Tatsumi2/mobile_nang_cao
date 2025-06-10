@@ -1,9 +1,12 @@
-import 'package:do_an_mobile/features/story/screens/event_1_screen.dart';
-import 'package:do_an_mobile/features/story/screens/event_2_screen.dart';
-import 'package:do_an_mobile/features/story/screens/event_3_screen.dart';
-import 'package:do_an_mobile/features/story/screens/event_4_screen.dart';
-import 'package:do_an_mobile/features/story/screens/event_5_screen.dart';
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
+
+import 'widgets/event_1_screen.dart';
+import 'widgets/event_2_screen.dart';
+import 'widgets/event_3_screen.dart';
+import 'widgets/event_4_screen.dart';
+import 'widgets/event_5_screen.dart';
 
 class StoryScreen extends StatelessWidget {
   const StoryScreen({super.key});
