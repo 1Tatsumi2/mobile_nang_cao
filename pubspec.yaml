@@ -9,13 +9,14 @@ environment:
 
 #--------------------PACKAGES--------------------
 dependencies:
-  device_preview: ^1.2.0
   flutter:
     sdk: flutter
 
   # Utility Packages
   http: ^1.1.0
-  intl: 0.20.2
+  intl: ^0.20.2
+
+
   logger: ^2.0.1
   url_launcher: ^6.2.5
   flutter_native_splash: ^2.4.6
@@ -48,8 +49,14 @@ flutter:
     - assets/images/on_boarding_images/
     - assets/images/animations/
     - assets/images/banner/
+
+    - assets/icons/
+    - assets/images/category/
+    - assets/images/top_products/
+    - assets/images/event/
     - assets/images/wishlist/
     - assets/images/avatar/
+
 
   #-------------------- LOCAL FONTS --------------------
   fonts:
