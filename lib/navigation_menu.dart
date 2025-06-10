@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:do_an_mobile/features/shop/screens/home/home.dart';
-import 'package:do_an_mobile/features/story/story.dart';
+import 'package:do_an_mobile/features/shop/screens/story/story.dart';
 import 'package:do_an_mobile/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';

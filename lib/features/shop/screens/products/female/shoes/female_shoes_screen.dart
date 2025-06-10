@@ -11,9 +11,14 @@ class FemaleShoesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Dummy data
-    final products = [
+    final List<Map<String, dynamic>> products;
+    products = [
       {
-        'image': 'assets/images/top_products/top_product_1.png',
+        'image': 'assets/images/top_products/top_product_1-removebg.png',
+        'images': [
+          'assets/images/top_products/top_product_1.png',
+          'assets/images/top_products/top_product_1_1.png',
+        ],
         'name': 'Elegant Heels',
         'price': '1,950',
       },
