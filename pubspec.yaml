@@ -9,7 +9,6 @@ environment:
 
 #--------------------PACKAGES--------------------
 dependencies:
-  device_preview: ^1.2.0
   flutter:
     sdk: flutter
 
@@ -49,6 +48,8 @@ flutter:
     - assets/images/animations/
     - assets/images/banner/
     - assets/icons/
+    - assets/images/category/
+    - assets/images/top_products/
 
   #-------------------- LOCAL FONTS --------------------
   fonts:
