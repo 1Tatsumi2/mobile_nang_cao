@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:do_an_mobile/features/authentication/screens/password_configuration/forget_password.dart';
 import 'package:do_an_mobile/features/authentication/screens/signup/signup.dart';
 import 'package:do_an_mobile/navigation_menu.dart';
