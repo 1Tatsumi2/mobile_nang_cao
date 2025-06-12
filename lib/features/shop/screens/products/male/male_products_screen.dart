@@ -6,24 +6,14 @@ import 'package:do_an_mobile/features/shop/screens/products/male/widgets/male_li
 import 'package:flutter/material.dart';
 import 'package:do_an_mobile/services/product_service.dart'; // Thêm import này
 
-class MaleProductsScreen extends StatefulWidget {
-  const MaleProductsScreen({super.key});
-
-  @override
-  State<MaleProductsScreen> createState() => _MaleProductsScreenState();
-}
-
-class _MaleProductsScreenState extends State<MaleProductsScreen> {
-  late Future<List<dynamic>> _futureProducts;
-
-  @override
-  void initState() {
-    super.initState();
-    _futureProducts = ProductService.fetchProducts(); // Gọi API
-  }
+class MaleProductsScreen extends StatelessWidget {
+  final List<dynamic> products;
+  const MaleProductsScreen(this.products, {super.key});
 
   @override
   Widget build(BuildContext context) {
+    final imageBaseUrl = 'http://localhost:5139/media/products/'; // Đổi thành IP backend nếu cần
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -44,26 +34,11 @@ class _MaleProductsScreenState extends State<MaleProductsScreen> {
               CategoryButton(label: 'Sort by'),
             ],
           ),
-          // Sử dụng FutureBuilder để lấy dữ liệu từ API
+          // Hiển thị danh sách sản phẩm
           Expanded(
-            child: FutureBuilder<List<dynamic>>(
-              future: _futureProducts,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No products found.'));
-                }
-                final products = snapshot.data!;
-                final imageBaseUrl = 'http://localhost:5139/media/products/'; // Đổi thành IP backend của bạn
-
-                return TMaleListProducts(
-                  products: products.cast<Map<String, dynamic>>(),
-                  imageBaseUrl: imageBaseUrl,
-                );
-              },
+            child: TMaleListProducts(
+              products: products.cast<Map<String, dynamic>>(),
+              imageBaseUrl: imageBaseUrl,
             ),
           ),
         ],
