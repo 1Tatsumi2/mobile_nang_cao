@@ -30,14 +30,23 @@ class TMaleListProducts extends StatelessWidget {
             final product = products[index];
             final imageUrl = product['image'] != null
                 ? '$imageBaseUrl${product['image']}'
+                : '';
+            final image2Url = product['image2'] != null && product['image2'] != ''
+                ? '$imageBaseUrl${product['image2']}'
                 : null;
+
+            // Tạo danh sách images gồm image và image2 (nếu có)
+            final images = [
+              if (imageUrl.isNotEmpty) imageUrl,
+              if (image2Url != null && image2Url.isNotEmpty) image2Url,
+            ];
+
             return _MaleProductCard(
-              image: imageUrl ?? '',
-              name: product['name'] ?? '', // Lấy trực tiếp từ dữ liệu
+              image: imageUrl,
+              name: product['name'] ?? '',
               price: '\$${product['price']}',
-              images: List<String>.from(
-                product['images'] ?? [],
-              ), // Thêm dòng này!
+              images: images,
+              description: product['description'] ?? '',
             );
           },
         ),
@@ -50,13 +59,15 @@ class _MaleProductCard extends StatefulWidget {
   final String image;
   final String name;
   final String price;
-  final List<String>? images; // Thêm trường này nếu cần truyền nhiều ảnh
+  final List<String>? images;
+  final String? description; // thêm trường này
 
   const _MaleProductCard({
     required this.image,
     required this.name,
     required this.price,
-    this.images, // Thêm trường này nếu cần truyền nhiều ảnh
+    this.images,
+    this.description,
   });
 
   @override

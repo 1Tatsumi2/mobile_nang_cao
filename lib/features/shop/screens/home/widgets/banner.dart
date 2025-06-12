@@ -4,6 +4,7 @@ import 'package:do_an_mobile/features/shop/screens/products/female/female_produc
 import 'package:do_an_mobile/features/shop/screens/products/male/male_products_screen.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
+import 'package:do_an_mobile/services/product_service.dart';
 
 class TBanner extends StatelessWidget {
   const TBanner({super.key});
@@ -69,11 +70,12 @@ class TBanner extends StatelessWidget {
                       );
                     }),
                     const SizedBox(width: 16),
-                    _buildWhiteBox('FOR HIM', () {
+                    _buildWhiteBox('FOR HIM', () async {
+                      final products = await ProductService.searchProducts(category: "Men's");
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => MaleProductsScreen(),
+                          builder: (context) => MaleProductsScreen(products),
                         ),
                       );
                     }),
