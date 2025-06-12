@@ -1,3 +1,4 @@
+import 'package:do_an_mobile/features/shop/screens/cart/cart_screen.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
@@ -101,7 +102,14 @@ class HeaderDelegate extends SliverPersistentHeaderDelegate {
                 Stack(
                   children: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const CartScreen(),
+                          ),
+                        );
+                      },
                       icon: const Icon(
                         Iconsax.shopping_bag,
                         color: TColors.white,
