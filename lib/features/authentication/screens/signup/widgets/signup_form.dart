@@ -1,4 +1,3 @@
-import 'package:do_an_mobile/features/authentication/screens/signup/verify_email.dart';
 import 'package:do_an_mobile/features/authentication/screens/signup/widgets/terms_conditions_checkbox.dart';
 import 'package:do_an_mobile/services/auth_service.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
