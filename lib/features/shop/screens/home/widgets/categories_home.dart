@@ -1,7 +1,6 @@
-import 'package:do_an_mobile/features/shop/screens/products/female/handbags/female_handbags_screen.dart';
-import 'package:do_an_mobile/features/shop/screens/products/female/shoes/female_shoes_screen.dart';
-import 'package:do_an_mobile/features/shop/screens/products/male/bags/male_bags_screen.dart';
-import 'package:do_an_mobile/features/shop/screens/products/male/shoes/male_shoes_screen.dart';
+
+import 'package:do_an_mobile/features/shop/screens/products/products_screen.dart';
+import 'package:do_an_mobile/services/product_service.dart';
 import 'package:flutter/material.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:get/get.dart';
@@ -36,15 +35,51 @@ class TCategories extends StatelessWidget {
         ];
         return InkWell(
           borderRadius: BorderRadius.circular(TSizes.cardRadiusSm),
-          onTap: () {
+          onTap: () async {
             if (index == 0) {
-              Get.to(() => const FemaleHandbagsScreen());
+              // Women's Handbags
+              final products = await ProductService.searchProducts(
+                category: "Women's",
+                brand: "HandBags",
+              );
+              Get.to(() => ProductsScreen(
+                gender: "Women's",
+                products: products.cast<Map<String, dynamic>>(),
+                category: "HandBags",
+              ));
             } else if (index == 1) {
-              Get.to(() => const FemaleShoesScreen());
+              // Women's Shoes
+              final products = await ProductService.searchProducts(
+                category: "Women's",
+                brand: "Shoes",
+              );
+              Get.to(() => ProductsScreen(
+                gender: "Women's",
+                products: products.cast<Map<String, dynamic>>(),
+                category: "Shoes",
+              ));
             } else if (index == 2) {
-              Get.to(() => const MaleShoesScreen());
+              // Men's Shoes
+              final products = await ProductService.searchProducts(
+                category: "Men's",
+                brand: "Shoes",
+              );
+              Get.to(() => ProductsScreen(
+                gender: "Men's",
+                products: products.cast<Map<String, dynamic>>(),
+                category: "Shoes",
+              ));
             } else if (index == 3) {
-              Get.to(() => const MaleBagsScreen());
+              // Men's Bags
+              final products = await ProductService.searchProducts(
+                category: "Men's",
+                brand: "Bags",
+              );
+              Get.to(() => ProductsScreen(
+                gender: "Men's",
+                products: products.cast<Map<String, dynamic>>(),
+                category: "Bags",
+              ));
             }
           },
           child: Container(
