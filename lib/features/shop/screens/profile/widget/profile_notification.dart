@@ -1,8 +1,9 @@
+// ignore_for_file: deprecated_member_use, use_key_in_widget_constructors, unnecessary_import
+
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_connect/http/src/http/interface/request_base.dart';
 
 class ProfileNotification extends StatelessWidget{
 
