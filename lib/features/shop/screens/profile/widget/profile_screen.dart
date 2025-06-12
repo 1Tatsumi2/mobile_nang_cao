@@ -5,6 +5,8 @@ import 'package:do_an_mobile/features/authentication/screens/login/login.dart';
 import 'package:do_an_mobile/features/authentication/screens/password_configuration/forget_password.dart';
 import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_address.dart';
 import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_detail.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_notification.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_order.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
@@ -285,7 +287,11 @@ class ProfileScreen extends StatelessWidget {
                               icon: Icons.notifications_outlined, 
                               title: 'Notifiaction', 
                               subtitle: "Manage your notification", 
-                              onTap: () {}, 
+                              onTap: () {
+                                Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) =>ProfileNotification()),
+                                );
+                              }, 
                               color: TColors.primary
                               ),
                             ],
@@ -298,7 +304,11 @@ class ProfileScreen extends StatelessWidget {
                               icon: Icons.shopping_bag_outlined, 
                               title: 'Your Orders', 
                               subtitle: "View your orders history", 
-                              onTap: () {}, 
+                              onTap: () {
+                                Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => ProfileOrder()),
+                                );
+                              }, 
                               color: TColors.primary
                               ),
                               _buildMenuItem(
@@ -344,9 +354,8 @@ class ProfileScreen extends StatelessWidget {
                               title: 'Log Out', 
                               subtitle: "Sign out from your account", 
                               onTap: () {
-                                Navigator.of(context).pushAndRemoveUntil(
+                                Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(builder: (context) => LoginScreen()),
-                                (Route<dynamic> route) => false,
                                 );
                               }, 
                               color: TColors.dark,
