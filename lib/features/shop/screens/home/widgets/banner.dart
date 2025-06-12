@@ -71,7 +71,9 @@ class TBanner extends StatelessWidget {
                     }),
                     const SizedBox(width: 16),
                     _buildWhiteBox('FOR HIM', () async {
-                      final products = await ProductService.searchProducts(category: "Men's");
+                      final products = await ProductService.searchProducts(
+                        category: "Men's",
+                      );
                       Navigator.push(
                         context,
                         MaterialPageRoute(

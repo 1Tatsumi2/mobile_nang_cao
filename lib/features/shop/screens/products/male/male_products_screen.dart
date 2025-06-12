@@ -4,7 +4,6 @@ import 'package:do_an_mobile/common/widgets/filter_list/category_bar.dart';
 import 'package:do_an_mobile/features/shop/screens/products/male/widgets/male_banner.dart';
 import 'package:do_an_mobile/features/shop/screens/products/male/widgets/male_list_products.dart';
 import 'package:flutter/material.dart';
-import 'package:do_an_mobile/services/product_service.dart'; // Thêm import này
 
 class MaleProductsScreen extends StatelessWidget {
   final List<dynamic> products;
@@ -12,7 +11,8 @@ class MaleProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageBaseUrl = 'http://localhost:5139/media/products/'; // Đổi thành IP backend nếu cần
+    final imageBaseUrl =
+        'http://localhost:5139/media/products/'; // Đổi thành IP backend nếu cần
 
     return Scaffold(
       extendBodyBehindAppBar: true,

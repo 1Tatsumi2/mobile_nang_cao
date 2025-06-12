@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:do_an_mobile/features/shop/screens/cart/cart_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String image;
@@ -102,7 +103,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           fit: BoxFit.contain,
                           width: double.infinity,
                           height: 320,
-                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 100),
+                          errorBuilder:
+                              (context, error, stackTrace) =>
+                                  const Icon(Icons.broken_image, size: 100),
                         ),
                       );
                     },
@@ -212,6 +215,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ),
                   onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CartScreen(),
+                      ),
+                    );
                     // Xử lý thêm vào giỏ hàng
                   },
                   child: const Text(
