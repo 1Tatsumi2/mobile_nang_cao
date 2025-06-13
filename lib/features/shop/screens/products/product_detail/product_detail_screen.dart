@@ -4,7 +4,8 @@ class ProductDetailScreen extends StatefulWidget {
   final String image;
   final String name;
   final String price;
-  final List<String>? images; // Danh sách ảnh nếu có nhiều ảnh
+  final List<String>? images;
+  final String? description; // thêm trường này
 
   const ProductDetailScreen({
     super.key,
@@ -12,6 +13,7 @@ class ProductDetailScreen extends StatefulWidget {
     required this.name,
     required this.price,
     this.images,
+    this.description,
   });
 
   @override
@@ -95,11 +97,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         width: double.infinity,
                         color: const Color(0xFFE7E7E7),
                         alignment: Alignment.center,
-                        child: Image.asset(
+                        child: Image.network(
                           images[index],
                           fit: BoxFit.contain,
                           width: double.infinity,
                           height: 320,
+                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 100),
                         ),
                       );
                     },
@@ -220,6 +223,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ),
                 ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                widget.description ?? '',
+                style: const TextStyle(fontSize: 15, color: Colors.black87),
+                textAlign: TextAlign.center,
               ),
             ),
           ],

@@ -3,9 +3,15 @@ import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 
-class TFemaleListProducts extends StatelessWidget {
-  final List<Map<String, dynamic>> products; // Sửa lại kiểu này!
-  const TFemaleListProducts({super.key, required this.products});
+class TListProducts extends StatelessWidget {
+  final List<Map<String, dynamic>> products;
+  final String imageBaseUrl;
+
+  const TListProducts({
+    super.key,
+    required this.products,
+    required this.imageBaseUrl,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +19,7 @@ class TFemaleListProducts extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.zero,
         child: GridView.builder(
-          padding: EdgeInsets.zero, // Thêm dòng này!
+          padding: EdgeInsets.zero,
           itemCount: products.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
@@ -23,11 +29,28 @@ class TFemaleListProducts extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             final product = products[index];
-            return _FemaleProductCard(
-              image: product['image']!,
-              name: product['name']!,
+            final imageUrl = product['image'] != null
+                ? '$imageBaseUrl${product['image']}'
+                : '';
+            final image2Url = product['image2'] != null && product['image2'] != ''
+                ? '$imageBaseUrl${product['image2']}'
+                : null;
+
+            // Gom tất cả ảnh vào 1 list
+            final images = <String>[
+              if (imageUrl.isNotEmpty) imageUrl,
+              if (image2Url != null && image2Url.isNotEmpty) image2Url,
+              // Nếu có mảng images thì thêm vào
+              if (product['images'] != null)
+                ...List<String>.from(product['images'].map((img) => '$imageBaseUrl$img')),
+            ];
+
+            return _ProductCard(
+              image: imageUrl,
+              name: product['name'] ?? '',
               price: '\$${product['price']}',
-              images: List<String>.from(product['images'] ?? []),
+              images: images,
+              description: product['description'] ?? '',
             );
           },
         ),
@@ -36,24 +59,26 @@ class TFemaleListProducts extends StatelessWidget {
   }
 }
 
-class _FemaleProductCard extends StatefulWidget {
+class _ProductCard extends StatefulWidget {
   final String image;
   final String name;
   final String price;
-  final List<String>? images; // Thêm trường này nếu cần truyền nhiều ảnh
+  final List<String>? images;
+  final String? description;
 
-  const _FemaleProductCard({
+  const _ProductCard({
     required this.image,
     required this.name,
     required this.price,
-    this.images, // Thêm trường này nếu cần truyền nhiều ảnh
+    this.images,
+    this.description,
   });
 
   @override
-  State<_FemaleProductCard> createState() => _FemaleProductCardState();
+  State<_ProductCard> createState() => _ProductCardState();
 }
 
-class _FemaleProductCardState extends State<_FemaleProductCard> {
+class _ProductCardState extends State<_ProductCard> {
   bool isFavorite = false;
 
   @override
@@ -63,13 +88,12 @@ class _FemaleProductCardState extends State<_FemaleProductCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder:
-                (_) => ProductDetailScreen(
-                  image: widget.image,
-                  name: widget.name,
-                  price: widget.price,
-                  images: widget.images, // <-- Truyền thêm dòng này
-                ),
+            builder: (_) => ProductDetailScreen(
+              image: widget.image,
+              name: widget.name,
+              price: widget.price,
+              images: widget.images,
+            ),
           ),
         );
       },
@@ -93,7 +117,7 @@ class _FemaleProductCardState extends State<_FemaleProductCard> {
                 children: [
                   SizedBox(
                     height: 120,
-                    child: Image.asset(widget.image, fit: BoxFit.contain),
+                    child: Image.network(widget.image, fit: BoxFit.contain),
                   ),
                   const SizedBox(height: 10),
                   Text(
@@ -132,7 +156,6 @@ class _FemaleProductCardState extends State<_FemaleProductCard> {
               ),
             ),
           ),
-          // Icon trái tim ở góc trên bên phải
           Positioned(
             top: 12,
             right: 16,
