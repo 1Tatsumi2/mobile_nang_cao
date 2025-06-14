@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:do_an_mobile/features/shop/screens/products/female/female_products_screen.dart';
-import 'package:do_an_mobile/features/shop/screens/products/male/male_products_screen.dart';
+
+import 'package:do_an_mobile/features/shop/screens/products/products_screen.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:do_an_mobile/services/product_service.dart';
@@ -61,11 +61,15 @@ class TBanner extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _buildWhiteBox('FOR HER', () {
+                    _buildWhiteBox('FOR HER', () async {
+                      final products = await ProductService.searchProducts(category: "Women's");
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => FemaleProductsScreen(),
+                          builder: (context) => ProductsScreen(
+                            gender: "Women's",
+                            products: products.cast<Map<String, dynamic>>(), // ép kiểu ở đây
+                          ),
                         ),
                       );
                     }),
@@ -77,7 +81,10 @@ class TBanner extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => MaleProductsScreen(products),
+                          builder: (context) => ProductsScreen(
+                            gender: "Men's",
+                            products: products.cast<Map<String, dynamic>>(), // ép kiểu ở đây
+                          ),
                         ),
                       );
                     }),
