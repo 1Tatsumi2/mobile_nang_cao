@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_edit.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
@@ -132,7 +133,13 @@ class ProfileDetail extends StatelessWidget{
                       IconButton(
                         icon: Icon(Icons.edit),
                         color: TColors.light,
-                        onPressed: () {}, 
+                        onPressed: () {
+                          Navigator.push(context, 
+                          MaterialPageRoute(
+                            builder: (context) => ProfileDetailEdit(),
+                            )
+                          );
+                        }, 
                       ),
                     ],
                   ),
