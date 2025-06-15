@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:do_an_mobile/features/shop/screens/cart/cart_screen.dart';
@@ -22,6 +24,29 @@ class ProductDetailScreen extends StatefulWidget {
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
 }
 
+final List<Map<String, dynamic>> paymentOptions = [
+  {
+    'label': 'Visa',
+    'icon': 'assets/icons/visa.png', // Đặt icon riêng cho từng loại
+  },
+  {'label': 'MasterCard', 'icon': 'assets/icons/mastercard.png'},
+  {'label': 'Apple Pay', 'icon': 'assets/icons/apple_pay.png'},
+  {'label': 'Amazon Pay', 'icon': 'assets/icons/amazon_pay.png'},
+  {'label': 'Amex', 'icon': 'assets/icons/amex.png'},
+  {'label': 'Paypal', 'icon': 'assets/icons/paypal.png'},
+  {'label': 'Discover', 'icon': 'assets/icons/discover.png'},
+  {'label': 'JCB', 'icon': 'assets/icons/jcb.png'},
+];
+
+final List<String> variations = [
+  'assets/images/variations/variation1-removebg.png',
+  'assets/images/variations/variation1-removebg.png',
+  'assets/images/variations/variation1-removebg.png',
+  'assets/images/variations/variation1-removebg.png',
+  'assets/images/variations/variation1-removebg.png',
+  'assets/images/variations/variation1-removebg.png',
+];
+
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   late final PageController _pageController;
   int currentIndex = 0;
@@ -30,6 +55,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool showMaterials = false; // Thêm vào State
   bool showPayment = false; // Thêm vào State
   bool showPackaging = false; // Thêm vào State
+  bool showVariations = false; // Thêm vào State
 
   List<String> get images => widget.images ?? [widget.image];
 
@@ -162,6 +188,119 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                 ),
               ),
+              // 7. Variations section
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 0,
+                ),
+                child: Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          showVariations = !showVariations;
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.08),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            const Text(
+                              'Variations',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                letterSpacing: 1,
+                              ),
+                            ),
+                            const Spacer(),
+                            Icon(
+                              showVariations
+                                  ? Icons.keyboard_arrow_up
+                                  : Icons.keyboard_arrow_down,
+                              color: Colors.black87,
+                              size: 28,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 400),
+                      curve: Curves.easeInOut,
+                      child:
+                          showVariations
+                              ? Container(
+                                width: double.infinity,
+                                margin: const EdgeInsets.only(top: 0),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: Colors.grey.shade300,
+                                    width: 1,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.08),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: [
+                                      ...variations.map(
+                                        (img) => Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
+                                            child: Image.asset(
+                                              img,
+                                              width: 100,
+                                              height: 100,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                              : const SizedBox.shrink(),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: TSizes.spaceBtwSections),
               // 4. Tên và giá sản phẩm
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -708,17 +847,3 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 }
-
-final List<Map<String, dynamic>> paymentOptions = [
-  {
-    'label': 'Visa',
-    'icon': 'assets/icons/visa.png', // Đặt icon riêng cho từng loại
-  },
-  {'label': 'MasterCard', 'icon': 'assets/icons/mastercard.png'},
-  {'label': 'Apple Pay', 'icon': 'assets/icons/apple_pay.png'},
-  {'label': 'Amazon Pay', 'icon': 'assets/icons/amazon_pay.png'},
-  {'label': 'Amex', 'icon': 'assets/icons/amex.png'},
-  {'label': 'Paypal', 'icon': 'assets/icons/paypal.png'},
-  {'label': 'Discover', 'icon': 'assets/icons/discover.png'},
-  {'label': 'JCB', 'icon': 'assets/icons/jcb.png'},
-];

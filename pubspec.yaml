@@ -55,7 +55,7 @@ flutter:
     - assets/images/event/
     - assets/images/wishlist/
     - assets/images/avatar/
-
+    - assets/images/variations/
   #-------------------- LOCAL FONTS --------------------
   fonts:
     - family: Poppins
