@@ -1,8 +1,4 @@
-
-
 // ignore_for_file: deprecated_member_use, use_key_in_widget_constructors, unused_element
-
-import 'package:do_an_mobile/features/shop/screens/profile/profile.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
@@ -84,7 +80,9 @@ class ProfileOrder extends StatelessWidget {
       child: InkWell(
         onTap: () {},
         borderRadius: BorderRadius.circular(16),
-        child: Column(
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
@@ -94,85 +92,92 @@ class ProfileOrder extends StatelessWidget {
                   style: TextStyle(
                     fontSize: TSizes.fontSizeMd,
                     fontWeight: TSizes.fontWeightBold,
-                    color: TColors.textPrimary,
+                    color: TColors.primary,
+                    ),
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(status).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(status).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(status,
+                      style: TextStyle(
+                        color: _getStatusColor(status),
+                        fontWeight: TSizes.fontWeightBold,
+                        fontSize: TSizes.fontSizeSm,
+                      ),
+                    ),
                   ),
-                  child: Text(status,
+                  SizedBox(height: 12),
+                  Text(
+                    'Ordered on $date',
                     style: TextStyle(
-                      color: _getStatusColor(status),
-                      fontWeight: TSizes.fontWeightBold,
+                      fontSize: TSizes.fontSizeMd,
+                      color: TColors.primary,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 12),
+                  Divider(),
+                  SizedBox(height: 12),
+                  Text(
+                    '${items.length} ${items.length == 1 ? 'item' : 'item'}:',
+                    style: TextStyle(
                       fontSize: TSizes.fontSizeSm,
+                      color: TColors.dark,
                     ),
                   ),
-                ),
-                SizedBox(height: 12),
-                Text('Ordered on #$date',
-                  style: TextStyle(
-                    fontSize: TSizes.fontSizeMd,
-                    color: TColors.textPrimary,
+                  SizedBox(height: 8),
+                  Text(
+                    items.join(', '),
+                    style: TextStyle(
+                      fontSize: TSizes.fontSizeSm,
+                      color: TColors.dark,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                SizedBox(height: 12),
-                Divider(),
-                SizedBox(height: 12),
-                Text('${items.length} ${items.length == 1 ? 'item' : 'items'}:',
-                  style: TextStyle(
-                    fontSize: TSizes.fontSizeMd,
-                    color: TColors.textPrimary,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  items.join(', '),
-                  style: TextStyle(
-                    fontSize: TSizes.fontSizeMd,
-                    color: TColors.textPrimary,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("Total:",
-                      style: TextStyle(
-                        fontSize: TSizes.fontSizeMd,
-                        fontWeight: TSizes.fontWeightBold,
-                        color: TColors.textPrimary,
+                  SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Total:",
+                        style: TextStyle(
+                          fontSize: TSizes.fontSizeMd,
+                          fontWeight: TSizes.fontWeightBold,
+                          color: TColors.primary,
+                        ),
                       ),
-                    ),
-                    Text("\$${total.toStringAsFixed(2)}",
-                      style: TextStyle(
-                        fontSize: TSizes.fontSizeMd,
-                        fontWeight: TSizes.fontWeightBold,
-                        color: TColors.primary,
+                      Text(
+                        "\$${total.toStringAsFixed(2)}",
+                        style: TextStyle(
+                          fontSize: TSizes.fontSizeMd,
+                          fontWeight: TSizes.fontWeightBold,
+                          color: TColors.primary,
+                        ),
                       ),
+                    ],
+                  ),
+              SizedBox(height: 12),
+              Row(
+                children: [
+                  Spacer(),
+                  TextButton.icon(
+                    icon: Icon(Icons.local_shipping_outlined, size: TSizes.iconLg),
+                    onPressed: () {
+                      //Navigator.push(context, MaterialPageRoute(builder: (context) => TrackOrderScreen()));
+                    }, label : Text("Track Order"),
+                    style: TextButton.styleFrom(
+                      foregroundColor: TColors.primary,
                     ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: 12),
-            Row(
-              children: [
-                Spacer(),
-                TextButton.icon(
-                  icon: Icon(Icons.local_shipping_outlined, size: TSizes.iconLg),
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
-                  }, label : Text("Track Order"),
-                  style: TextButton.styleFrom(foregroundColor: TColors.primary),
-                ),
-              ],
-            ),
-          ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -264,9 +269,8 @@ class ProfileOrder extends StatelessWidget {
                       items: order['items'] as List<String>, 
                       total: order['total'] as double, 
                       onTap: () {
-                        //Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen));
-                      }, 
-                      context: context,
+                        //Navigator.push(context, MaterialPageRoute(builder: (context) => TrackOrderScreen));
+                      }, context: context,
                     ),
                   ),
                 ],
