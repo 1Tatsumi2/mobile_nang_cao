@@ -104,34 +104,42 @@ class _TSignupFormState extends State<TSignupForm> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: _isLoading
-                  ? null
-                  : () async {
-                      if (_formKey.currentState!.validate()) {
-                        setState(() => _isLoading = true);
-                        try {
-                          final result = await AuthService.register(
-                            username: _usernameController.text,
-                            email: _emailController.text,
-                            phone: _phoneController.text,
-                            password: _passwordController.text,
-                          );
-                          if (result['success'] == true) {
-                            // Đăng ký thành công, chuyển sang màn hình xác thực hoặc login
-                            Get.snackbar('Success', result['message'] ?? 'Đăng ký thành công');
-                            // Get.to(() => const VerifyEmailScreen());
-                          } else {
-                            Get.snackbar('Error', result['message'] ?? 'Đăng ký thất bại');
+              onPressed:
+                  _isLoading
+                      ? null
+                      : () async {
+                        if (_formKey.currentState!.validate()) {
+                          setState(() => _isLoading = true);
+                          try {
+                            final result = await AuthService.register(
+                              username: _usernameController.text,
+                              email: _emailController.text,
+                              phone: _phoneController.text,
+                              password: _passwordController.text,
+                            );
+                            if (result['success'] == true) {
+                              // Đăng ký thành công, chuyển sang màn hình xác thực hoặc login
+                              Get.snackbar(
+                                'Success',
+                                result['message'] ?? 'Đăng ký thành công',
+                              );
+                              // Get.to(() => const VerifyEmailScreen());
+                            } else {
+                              Get.snackbar(
+                                'Error',
+                                result['message'] ?? 'Đăng ký thất bại',
+                              );
+                            }
+                          } catch (e) {
+                            Get.snackbar('Error', e.toString());
                           }
-                        } catch (e) {
-                          Get.snackbar('Error', e.toString());
+                          setState(() => _isLoading = false);
                         }
-                        setState(() => _isLoading = false);
-                      }
-                    },
-              child: _isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text(TTexts.createAccount),
+                      },
+              child:
+                  _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(TTexts.createAccount),
             ),
           ),
         ],
