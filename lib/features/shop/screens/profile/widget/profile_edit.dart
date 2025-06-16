@@ -309,7 +309,9 @@ class EditDetailState extends State<ProfileDetailEdit> {
                           SizedBox(height: 24),
                           GradientButton(
                             text: "Save changes",
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
                           ),
                         ],
                       ),
