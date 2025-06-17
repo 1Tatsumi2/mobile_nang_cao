@@ -1,4 +1,6 @@
 import 'package:do_an_mobile/features/shop/screens/cart/cart_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/products/products_screen.dart';
+import 'package:do_an_mobile/services/product_service.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +26,24 @@ class HeaderDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    // Tính tỉ lệ co lại (0 = max, 1 = min)
     final percent = (shrinkOffset / (maxExtent - minExtent)).clamp(0.0, 1.0);
+
+    // Thêm controller cho search
+    final TextEditingController searchController = TextEditingController();
+
+    Future<void> _onSearch(String value) async {
+      if (value.trim().isEmpty) return;
+      final products = await ProductService.searchProducts(searchTerm: value.trim());
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ProductsScreen(
+            gender: "All", // hoặc truyền gì phù hợp
+            products: products.cast<Map<String, dynamic>>(),
+          ),
+        ),
+      );
+    }
 
     return Container(
       color: TColors.black,
@@ -72,6 +90,8 @@ class HeaderDelegate extends SliverPersistentHeaderDelegate {
                     child: SizedBox(
                       height: 44,
                       child: TextFormField(
+                        controller: searchController,
+                        onFieldSubmitted: _onSearch, // <-- thêm dòng này
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Iconsax.search_normal),
                           hintText: 'Search in Store',
