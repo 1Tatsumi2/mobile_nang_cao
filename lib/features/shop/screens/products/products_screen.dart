@@ -7,6 +7,7 @@ import 'package:do_an_mobile/features/shop/screens/products/male/bags/widgets/ba
 import 'package:do_an_mobile/features/shop/screens/products/male/shoes/widgets/male_shoes_banner.dart';
 import 'package:do_an_mobile/features/shop/screens/products/male/widgets/male_banner.dart';
 import 'package:do_an_mobile/features/shop/screens/products/widgets/list_products.dart';
+import 'package:do_an_mobile/utils/constants/api_constants.dart';
 import 'package:flutter/material.dart';
 
 class ProductsScreen extends StatefulWidget {
@@ -52,7 +53,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final imageBaseUrl = 'http://localhost:5139/media/products/';
+    final imageBaseUrl = ApiConstants.productMediaUrl; // <-- dùng biến chung
     final double categoryBarHeight = 56;
     final double bannerHeight = 245;
 
