@@ -61,7 +61,7 @@ class GradientButton extends StatelessWidget{
             style: TextStyle(
               color: TColors.light,
               fontSize: TSizes.fontSizeMd,
-              fontWeight: TSizes.fontWeightW600,
+              fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
             ),
           ),

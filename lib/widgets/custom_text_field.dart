@@ -12,6 +12,7 @@ class CustomTextField extends StatelessWidget{
   final String? Function(String?)? validator;
   final TextEditingController? controller;
   final Widget? suffixIcon;
+  final bool enabled; // ← THÊM PARAMETER NÀY
 
   const CustomTextField({
     super.key, 
@@ -21,59 +22,77 @@ class CustomTextField extends StatelessWidget{
     this.keyboardType,
     this.validator,
     this.controller,
-    this.suffixIcon
+    this.suffixIcon,
+    this.enabled = true, // ← THÊM DEFAULT VALUE
     });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16), // ← THÊM const
       decoration: BoxDecoration(
-        color: TColors.light,
+        color: enabled ? TColors.light : TColors.lightGrey, // ← THAY ĐỔI MÀU KHI DISABLED
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: TColors.primary.withOpacity(0.1),
             blurRadius: 20,
-            offset: Offset(0, 5),
+            offset: const Offset(0, 5), // ← THÊM const
           ),
         ],
       ),
       child: TextFormField(
         controller: controller,
+        enabled: enabled, // ← SỬ DỤNG PARAMETER
         obscureText: isPassword,
         keyboardType: keyboardType,
         validator: validator,
         style: TextStyle(
-          color: TColors.textPrimary,
+          color: enabled ? TColors.textPrimary : TColors.grey, // ← THAY ĐỔI MÀU TEXT
           fontSize: TSizes.fontSizeMd,
         ),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
-            color: TColors.textSecondary,
+            color: enabled ? TColors.textSecondary : TColors.grey, // ← THAY ĐỔI MÀU LABEL
             fontSize: TSizes.fontSizeSm,
           ),
-          prefixIcon: Icon(prefixIcon, color: TColors.primary),
+          prefixIcon: Icon(
+            prefixIcon, 
+            color: enabled ? TColors.primary : TColors.grey, // ← THAY ĐỔI MÀU ICON
+          ),
           suffixIcon: suffixIcon ?? (isPassword ? IconButton(
-            icon: Icon(Icons.visibility_outlined),
-            onPressed: () {},
-            color: TColors.primary,
+            icon: const Icon(Icons.visibility_outlined), // ← THÊM const
+            onPressed: enabled ? () {} : null, // ← DISABLE KHI enabled = false
+            color: enabled ? TColors.primary : TColors.grey,
           ) : null),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: TColors.light,
-          contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+          fillColor: enabled ? TColors.light : TColors.lightGrey, // ← THAY ĐỔI MÀU NỀN
+          contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20), // ← THÊM const
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: TColors.primary, width: 2),
+            borderSide: BorderSide(
+              color: enabled ? TColors.primary : TColors.grey, 
+              width: 2,
+            ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: TColors.secondary.withOpacity(0.1), width: 1),
+            borderSide: BorderSide(
+              color: TColors.secondary.withOpacity(0.1), 
+              width: 1,
+            ),
+          ),
+          disabledBorder: OutlineInputBorder( // ← THÊM DISABLED BORDER
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(
+              color: TColors.grey.withOpacity(0.3), 
+              width: 1,
+            ),
           ),
         ),
       ),
