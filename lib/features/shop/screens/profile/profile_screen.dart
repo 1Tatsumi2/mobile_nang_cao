@@ -3,13 +3,20 @@
 
 import 'package:do_an_mobile/features/authentication/screens/login/login.dart';
 import 'package:do_an_mobile/features/authentication/screens/password_configuration/forget_password.dart';
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_address.dart';
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_detail.dart';
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_notification.dart';
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_order.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_address_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_detail_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_notification_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_order_screen.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: ProfileScreen(),
+  ));
+}
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -267,7 +274,7 @@ class ProfileScreen extends StatelessWidget {
                               subtitle: "Update your personal infomation", 
                               onTap: () {
                                 Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => ProfileDetail()),
+                                MaterialPageRoute(builder: (context) => ProfileDetailScreen()),
                                 );
                               }, 
                               color: TColors.primary
@@ -289,7 +296,7 @@ class ProfileScreen extends StatelessWidget {
                               subtitle: "Manage your notification", 
                               onTap: () {
                                 Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) =>ProfileNotification()),
+                                MaterialPageRoute(builder: (context) =>ProfileNotificationScreen()),
                                 );
                               }, 
                               color: TColors.primary
@@ -306,7 +313,7 @@ class ProfileScreen extends StatelessWidget {
                               subtitle: "View your orders history", 
                               onTap: () {
                                 Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => ProfileOrder()),
+                                MaterialPageRoute(builder: (context) => ProfileOrderScreen()),
                                 );
                               }, 
                               color: TColors.primary
@@ -317,7 +324,7 @@ class ProfileScreen extends StatelessWidget {
                               subtitle: "Manage your delivery addresses",
                               onTap: () {
                                 Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => ProfileAddress()),
+                                MaterialPageRoute(builder: (context) => ProfileAddressScreen()),
                                 );
                               }, 
                               color: TColors.primary

@@ -1,10 +1,10 @@
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/profile_screen.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 
-class ProfileAddress extends StatelessWidget{
-  const ProfileAddress ({ super.key });
+class ProfileAddressScreen extends StatelessWidget{
+  const ProfileAddressScreen ({ super.key });
   
   static final ValueNotifier<int> selectedAddressIndex = ValueNotifier<int> (0);
   final List<Map<String, String>> addresses = const [

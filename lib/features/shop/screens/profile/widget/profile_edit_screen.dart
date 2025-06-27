@@ -4,14 +4,14 @@ import 'package:do_an_mobile/widgets/custom_text_field.dart';
 import 'package:do_an_mobile/widgets/gradient_button.dart';
 import 'package:flutter/material.dart';
 
-class ProfileDetailEdit extends StatefulWidget{
-  const ProfileDetailEdit ({ super.key });
+class ProfileDetailEditScreen extends StatefulWidget{
+  const ProfileDetailEditScreen ({ super.key });
 
   @override
-  State<ProfileDetailEdit> createState() => EditDetailState();
+  State<ProfileDetailEditScreen> createState() => EditDetailState();
 }
 
-class EditDetailState extends State<ProfileDetailEdit> {
+class EditDetailState extends State<ProfileDetailEditScreen> {
   final _formKey = GlobalKey<FormState>();
   
   final _firstNameController = TextEditingController(text: "Tan");
