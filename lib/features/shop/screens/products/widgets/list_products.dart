@@ -51,6 +51,10 @@ class TListProducts extends StatelessWidget {
               price: '\$${product['price']}',
               images: images,
               description: product['description'] ?? '',
+              variations: product['variations'] != null
+                  ? List<Map<String, dynamic>>.from(product['variations'])
+                  : [],
+              productId: product['id'], // Thêm dòng này
             );
           },
         ),
@@ -60,18 +64,22 @@ class TListProducts extends StatelessWidget {
 }
 
 class _ProductCard extends StatefulWidget {
+  final int productId; // Thêm dòng này
   final String image;
   final String name;
   final String price;
   final List<String>? images;
   final String? description;
+  final List<Map<String, dynamic>>? variations;
 
   const _ProductCard({
+    required this.productId, // Thêm dòng này
     required this.image,
     required this.name,
     required this.price,
     this.images,
     this.description,
+    this.variations,
   });
 
   @override
@@ -89,10 +97,13 @@ class _ProductCardState extends State<_ProductCard> {
           context,
           MaterialPageRoute(
             builder: (_) => ProductDetailScreen(
+              productId: widget.productId, // Thêm dòng này
               image: widget.image,
               name: widget.name,
               price: widget.price,
               images: widget.images,
+              description: widget.description,
+              variations: widget.variations,
             ),
           ),
         );

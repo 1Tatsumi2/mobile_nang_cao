@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:do_an_mobile/utils/constants/api_constants.dart';
 
 class ProductService {
-  static const String baseUrl = 'http://localhost:5139/api/ProductApi';
+  static const String baseUrl = ApiConstants.productApi;
 
   static Future<List<dynamic>> fetchProducts() async {
     final response = await http.get(Uri.parse(baseUrl));
