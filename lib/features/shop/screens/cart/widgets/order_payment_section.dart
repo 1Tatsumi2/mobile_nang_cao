@@ -33,7 +33,7 @@ class _OrderPaymentSectionState extends State<OrderPaymentSection> {
   double couponDiscount = 0.0;
   double membershipDiscount = 0.0;
   String appliedCouponCode = '';
-  int appliedCouponId = 0; // 🔹 THÊM COUPON ID
+  int appliedCouponId = 0;
   bool isApplyingCoupon = false;
 
   double get subtotal => widget.cartItems.fold<double>(0, (sum, item) => sum + item.price * item.quantity);
@@ -48,23 +48,25 @@ class _OrderPaymentSectionState extends State<OrderPaymentSection> {
     _loadUserDiscountInfo();
   }
 
-  // Tải thông tin giảm giá membership của user
+  // 🔹 SỬA LẠI: Tải thông tin giảm giá membership của user
   Future<void> _loadUserDiscountInfo() async {
     try {
       final userEmail = await AuthService.getCurrentUserEmail();
       if (userEmail != null) {
-        final userInfo = await AuthService.getUserInfo(userEmail);
-        if (userInfo['success'] == true) {
-          final user = userInfo['user'];
-          final discountRate = user['discountRate'] ?? 0.0;
-          
-          setState(() {
-            membershipDiscount = subtotal * discountRate;
-          });
-          
-          print('Membership discount rate: ${discountRate * 100}%');
-          print('Membership discount amount: \$${membershipDiscount.toStringAsFixed(2)}');
-        }
+        // 🔹 SỬA: SỬ DỤNG METHOD MỚI TRONG AuthService
+        final discountRate = await AuthService.getCurrentUserDiscountRate();
+        final points = await AuthService.getCurrentUserPoints();
+        final tier = await AuthService.getCurrentUserMembershipTier();
+        
+        setState(() {
+          membershipDiscount = subtotal * discountRate;
+        });
+        
+        print('User Email: $userEmail');
+        print('Points: $points');
+        print('Membership Tier: $tier');
+        print('Membership discount rate: ${discountRate * 100}%');
+        print('Membership discount amount: \$${membershipDiscount.toStringAsFixed(2)}');
       }
     } catch (e) {
       print('Error loading user discount info: $e');

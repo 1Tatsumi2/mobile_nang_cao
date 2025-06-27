@@ -6,73 +6,52 @@ import 'package:do_an_mobile/utils/constants/api_constants.dart';
 class AuthService {
   static const String baseUrl = '${ApiConstants.accountApi}/Login';
   static const String registerUrl = '${ApiConstants.accountApi}/Register';
-  static const String userInfoUrl = '${ApiConstants.baseUrl}api/AccountApi/GetUserByEmail'; // 🔹 THÊM URL
   
   // Keys để lưu trong SharedPreferences
   static const String _isLoggedInKey = 'isLoggedIn';
-  static const String _userEmailKey = 'userEmail';
-  static const String _userNameKey = 'userName';
-  static const String _userIdKey = 'userId';
+  static const String _userEmailKey = 'user_email';
+  static const String _userNameKey = 'user_name';
+  static const String _userIdKey = 'user_id';
+  static const String _userProfileKey = 'user_profile';
 
   static Future<Map<String, dynamic>> login(String username, String password) async {
-    final response = await http.post(
-      Uri.parse(baseUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'UserName': username, 'Password': password}),
-    );
-    
-    print('Login URL: $baseUrl');
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-    
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+    try {
+      final response = await http.post(
+        Uri.parse(baseUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'UserName': username, 'Password': password}),
+      );
       
-      // Nếu đăng nhập thành công, gọi API khác để lấy thông tin user
-      if (data['success'] == true) {
-        try {
-          // Gọi API để lấy thông tin user
-          final userInfoResponse = await http.get(
-            Uri.parse('${ApiConstants.baseUrl}api/AccountApi/GetUserInfo?username=$username'),
-            headers: {'Content-Type': 'application/json'},
-          );
+      print('Login URL: $baseUrl');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        
+        if (data['success'] == true && data['user'] != null) {
+          final userData = data['user'];
           
-          if (userInfoResponse.statusCode == 200) {
-            final userInfo = jsonDecode(userInfoResponse.body);
-            
-            if (userInfo['success'] == true && userInfo['user'] != null) {
-              final userData = userInfo['user'];
-              
-              String email = userData['email'] ?? '';
-              String userName = userData['userName'] ?? username;
-              String userId = userData['id']?.toString() ?? '';
-              
-              await _saveUserInfo(
-                email: email,
-                userName: userName,
-                userId: userId,
-              );
-            }
-          }
-        } catch (e) {
-          print('Error getting user info: $e');
-          // Fallback: lưu ít nhất username
-          await _saveUserInfo(
-            email: username, // Có thể username là email
-            userName: username,
-            userId: DateTime.now().millisecondsSinceEpoch.toString(),
-          );
+          // 🔹 LƯU ĐẦY ĐỦ THÔNG TIN USER VÀO SHARED PREFERENCES
+          await _saveUserInfo(userData);
+          
+          print('✅ User login successful and data saved');
+          print('Saved user data: $userData');
+          
+          return data;
         }
       }
       
-      return data;
-    } else {
-      try {
-        final data = jsonDecode(response.body);
-        throw Exception(data['message'] ?? 'Login failed');
-      } catch (e) {
-        throw Exception('Login failed: ${response.body}');
-      }
+      return {
+        'success': false,
+        'message': 'Login failed'
+      };
+    } catch (e) {
+      print('❌ Login error: $e');
+      return {
+        'success': false,
+        'message': 'Network error: $e'
+      };
     }
   }
 
@@ -82,63 +61,42 @@ class AuthService {
     required String phone,
     required String password,
   }) async {
-    final response = await http.post(
-      Uri.parse(registerUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'UserName': username,
-        'Email': email,
-        'PhoneNumber': phone,
-        'Password': password,
-      }),
-    );
-    
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      
-      // Có thể lưu thông tin user sau khi đăng ký thành công
-      if (data['success'] == true) {
-        await _saveUserInfo(
-          email: email,
-          userName: username,
-          userId: data['userId']?.toString() ?? '',
-        );
-      }
-      
-      return data;
-    } else {
-      try {
-        final data = jsonDecode(response.body);
-        throw Exception(data['message'] ?? 'Register failed');
-      } catch (e) {
-        throw Exception('Register failed: ${response.body}');
-      }
-    }
-  }
-
-  // 🔹 THÊM METHOD getUserInfo
-  static Future<Map<String, dynamic>> getUserInfo(String email) async {
     try {
-      final response = await http.get(
-        Uri.parse('$userInfoUrl?email=$email'),
+      final response = await http.post(
+        Uri.parse(registerUrl),
         headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'UserName': username,
+          'Email': email,
+          'PhoneNumber': phone,
+          'Password': password,
+        }),
       );
       
-      print('GetUserInfo URL: $userInfoUrl?email=$email');
+      print('Register URL: $registerUrl');
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
       
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data;
-      } else {
-        return {
-          'success': false,
-          'message': 'Failed to get user info'
-        };
+        
+        if (data['success'] == true && data['user'] != null) {
+          final userData = data['user'];
+          
+          // 🔹 LƯU THÔNG TIN USER SAU KHI ĐĂNG KÝ THÀNH CÔNG
+          await _saveUserInfo(userData);
+          
+          print('✅ User register successful and data saved');
+          return data;
+        }
       }
+      
+      return {
+        'success': false,
+        'message': 'Register failed'
+      };
     } catch (e) {
-      print('Error getting user info: $e');
+      print('❌ Register error: $e');
       return {
         'success': false,
         'message': 'Network error: $e'
@@ -146,34 +104,102 @@ class AuthService {
     }
   }
 
-  // Lưu thông tin user
-  static Future<void> _saveUserInfo({
-    required String email,
-    required String userName,
-    required String userId,
-  }) async {
+  // 🔹 THÊM METHOD getUserInfo
+  static Future<Map<String, dynamic>> getUserInfo(String email) async {
+    try {
+      // Trước tiên, thử lấy từ cache
+      final cachedProfile = await getCachedUserProfile();
+      if (cachedProfile != null) {
+        print('✅ Using cached user info');
+        return {
+          'success': true,
+          'user': cachedProfile,
+        };
+      }
+
+      // Nếu không có cache, gọi API
+      print('🔄 Fetching user info from API for: $email');
+      final response = await http.get(
+        Uri.parse('${ApiConstants.accountApi}/GetProfile?email=$email'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      print('GetProfile Response status: ${response.statusCode}');
+      print('GetProfile Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        
+        if (data['success'] == true && data['user'] != null) {
+          // Cập nhật cache
+          await updateCachedProfile(data['user']);
+          return data;
+        }
+      }
+      
+      return {
+        'success': false,
+        'message': 'Failed to get user info'
+      };
+    } catch (e) {
+      print('❌ Error getting user info: $e');
+      return {
+        'success': false,
+        'message': 'Network error: $e'
+      };
+    }
+  }
+
+  // 🔹 LƯU THÔNG TIN USER VÀO STORAGE
+  static Future<void> _saveUserInfo(Map<String, dynamic> userData) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       
-      // Lưu từng giá trị và kiểm tra
-      final loginResult = await prefs.setBool(_isLoggedInKey, true);
-      final emailResult = await prefs.setString(_userEmailKey, email);
-      final userNameResult = await prefs.setString(_userNameKey, userName);
-      final userIdResult = await prefs.setString(_userIdKey, userId);
+      // Lưu từng giá trị cần thiết
+      await prefs.setBool(_isLoggedInKey, true);
+      await prefs.setString(_userEmailKey, userData['email'] ?? '');
+      await prefs.setString(_userNameKey, userData['userName'] ?? '');
+      await prefs.setString(_userIdKey, userData['id'] ?? '');
       
-      print('Save results - Login: $loginResult, Email: $emailResult, UserName: $userNameResult, UserId: $userIdResult');
+      // 🔹 LƯU TOÀN BỘ USER PROFILE VÀO CACHE
+      await prefs.setString(_userProfileKey, jsonEncode(userData));
       
-      // Verify save ngay lập tức
-      final savedLogin = prefs.getBool(_isLoggedInKey);
-      final savedEmail = prefs.getString(_userEmailKey);
-      final savedUserName = prefs.getString(_userNameKey);
-      final savedUserId = prefs.getString(_userIdKey);
-      
-      print('Immediately after save - Login: $savedLogin, Email: $savedEmail, UserName: $savedUserName, UserId: $savedUserId');
+      print('✅ User info saved to SharedPreferences');
+      print('Email: ${userData['email']}');
+      print('UserName: ${userData['userName']}');
+      print('Points: ${userData['points']}');
+      print('MembershipTier: ${userData['membershipTier']}');
       
     } catch (e) {
-      print('Error saving user info: $e');
+      print('❌ Error saving user info: $e');
       rethrow;
+    }
+  }
+
+  // 🔹 LẤY CACHED USER PROFILE
+  static Future<Map<String, dynamic>?> getCachedUserProfile() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cachedProfile = prefs.getString(_userProfileKey);
+      
+      if (cachedProfile != null) {
+        return jsonDecode(cachedProfile);
+      }
+      return null;
+    } catch (e) {
+      print('Error getting cached profile: $e');
+      return null;
+    }
+  }
+
+  // 🔹 CẬP NHẬT CACHED PROFILE
+  static Future<void> updateCachedProfile(Map<String, dynamic> userData) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_userProfileKey, jsonEncode(userData));
+      print('✅ Updated cached profile');
+    } catch (e) {
+      print('❌ Error updating cached profile: $e');
     }
   }
 
@@ -211,6 +237,48 @@ class AuthService {
     };
   }
 
+  // 🔹 LẤY DISCOUNT RATE TỪ CACHED PROFILE
+  static Future<double> getCurrentUserDiscountRate() async {
+    try {
+      final cachedProfile = await getCachedUserProfile();
+      if (cachedProfile != null) {
+        return (cachedProfile['discountRate'] as num?)?.toDouble() ?? 0.0;
+      }
+      return 0.0;
+    } catch (e) {
+      print('Error getting discount rate: $e');
+      return 0.0;
+    }
+  }
+
+  // 🔹 LẤY POINTS TỪ CACHED PROFILE
+  static Future<int> getCurrentUserPoints() async {
+    try {
+      final cachedProfile = await getCachedUserProfile();
+      if (cachedProfile != null) {
+        return (cachedProfile['points'] as num?)?.toInt() ?? 0;
+      }
+      return 0;
+    } catch (e) {
+      print('Error getting points: $e');
+      return 0;
+    }
+  }
+
+  // 🔹 LẤY MEMBERSHIP TIER TỪ CACHED PROFILE
+  static Future<String> getCurrentUserMembershipTier() async {
+    try {
+      final cachedProfile = await getCachedUserProfile();
+      if (cachedProfile != null) {
+        return cachedProfile['membershipTier'] ?? 'Basic';
+      }
+      return 'Basic';
+    } catch (e) {
+      print('Error getting membership tier: $e');
+      return 'Basic';
+    }
+  }
+
   // Đăng xuất
   static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
@@ -218,5 +286,14 @@ class AuthService {
     await prefs.remove(_userEmailKey);
     await prefs.remove(_userNameKey);
     await prefs.remove(_userIdKey);
+    await prefs.remove(_userProfileKey);
+    print('✅ User logged out and data cleared');
+  }
+
+  // 🔹 CLEAR CACHE (để force refresh)
+  static Future<void> clearCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_userProfileKey);
+    print('✅ User profile cache cleared');
   }
 }
