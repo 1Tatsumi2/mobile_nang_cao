@@ -2,15 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:do_an_mobile/features/authentication/screens/login/login.dart';
 import 'package:do_an_mobile/features/authentication/screens/password_configuration/forget_password.dart';
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_address.dart';
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_detail.dart';
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_notification.dart';
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_order.dart';
+
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_address_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_detail_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_notification_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_order_screen.dart';
 import 'package:do_an_mobile/services/user_service.dart';
+=======
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_address_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_detail_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_notification_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_order_screen.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 
 class ProfileScreen extends StatefulWidget {
+=======
+void main() {
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: ProfileScreen(),
+  ));
+}
+
+class ProfileScreen extends StatelessWidget {
+>>>>>>> 21fc3bcb6e722114e94fd3ae2d7c2a178181bc5c:lib/features/shop/screens/profile/profile_screen.dart
   const ProfileScreen({super.key});
 
   @override
@@ -789,6 +805,118 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
                           isLast: true,
                         ),
                       ],
+                    SizedBox(height: 24),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        children: [
+                          _buildSection(
+                          title: 'Account Setting', 
+                          items: [
+                            _buildMenuItem(
+                              icon: Icons.person_outlined, 
+                              title: 'Personal Details', 
+                              subtitle: "Update your personal infomation", 
+                              onTap: () {
+                                Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => ProfileDetailScreen()),
+                                );
+                              }, 
+                              color: TColors.primary
+                              ),
+                              _buildMenuItem(
+                              icon: Icons.lock_outlined, 
+                              title: 'Change Password', 
+                              subtitle: "Update your password",
+                              onTap: () {
+                                Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => ForgetPassword()),
+                                );
+                              }, 
+                              color: TColors.primary
+                              ),
+                              _buildMenuItem(
+                              icon: Icons.notifications_outlined, 
+                              title: 'Notifiaction', 
+                              subtitle: "Manage your notification", 
+                              onTap: () {
+                                Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) =>ProfileNotificationScreen()),
+                                );
+                              }, 
+                              color: TColors.primary
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 24),
+                          _buildSection(
+                          title: 'Shopping Preferences', 
+                          items: [
+                            _buildMenuItem(
+                              icon: Icons.shopping_bag_outlined, 
+                              title: 'Your Orders', 
+                              subtitle: "View your orders history", 
+                              onTap: () {
+                                Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => ProfileOrderScreen()),
+                                );
+                              }, 
+                              color: TColors.primary
+                              ),
+                              _buildMenuItem(
+                              icon: Icons.location_on_outlined, 
+                              title: 'Shipping Address', 
+                              subtitle: "Manage your delivery addresses",
+                              onTap: () {
+                                Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => ProfileAddressScreen()),
+                                );
+                              }, 
+                              color: TColors.primary
+                              ),
+                              _buildMenuItem(
+                              icon: Icons.payment_outlined, 
+                              title: 'Payment Methods', 
+                              subtitle: "Manage your payment options", 
+                              onTap: () {}, 
+                              color: TColors.primary
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 24),
+                          _buildSection(
+                          title: 'More', 
+                          items: [
+                            _buildMenuItem(
+                              icon: Icons.settings_outlined, 
+                              title: 'Settings', 
+                              subtitle: "App preferences and settings", 
+                              onTap: () {}, 
+                              color: TColors.primary
+                              ),
+                              _buildMenuItem(
+                              icon: Icons.help_outlined, 
+                              title: 'Help & Support', 
+                              subtitle: "Get help and contact us",
+                              onTap: () {}, 
+                              color: TColors.primary
+                              ),
+                              _buildMenuItem(
+                              icon: Icons.logout, 
+                              title: 'Log Out', 
+                              subtitle: "Sign out from your account", 
+                              onTap: () {
+                                Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(builder: (context) => LoginScreen()),
+                                );
+                              }, 
+                              color: TColors.dark,
+                              isDestructive: true,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                     
                     const SizedBox(height: 100),
