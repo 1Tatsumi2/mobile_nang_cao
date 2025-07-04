@@ -1,27 +1,59 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_edit_screen.dart';
+import 'package:do_an_mobile/services/user_service.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 
-class ProfileDetailScreen extends StatelessWidget{
-  const ProfileDetailScreen ({ super.key });
-  
-  Widget _buildSection(String title, List<Widget> children){
+class ProfileDetailScreen extends StatefulWidget {
+  const ProfileDetailScreen({super.key});
+
+  @override
+  State<ProfileDetailScreen> createState() => _ProfileDetailScreenState();
+}
+
+class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
+  Map<String, dynamic>? userProfile;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    try {
+      final profile = await UserService.getUserProfile();
+      if (mounted) {
+        setState(() {
+          userProfile = profile;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+      print('Error loading profile: $e');
+    }
+  }
+
+  Widget _buildSection(String title, List<Widget> children) {
     return Padding(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: TSizes.fontSizeMd,
-              fontWeight: TSizes.fontWeightBold,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           ...children,
         ],
       ),
@@ -32,54 +64,95 @@ class ProfileDetailScreen extends StatelessWidget{
     required IconData icon,
     required String label,
     required String value,
-    Color ? valueColor,
+    Color? valueColor,
   }) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
           Container(
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: TColors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon,
+            child: Icon(
+              icon,
               size: TSizes.iconMd,
               color: TColors.primary,
             ),
           ),
-          SizedBox(width: 16),
-          Expanded(child: 
-            Column(
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                  style: TextStyle(
+                Text(
+                  label,
+                  style: const TextStyle(
                     fontSize: TSizes.fontSizeSm,
-                    color: TColors.secondary,
+                    color: Colors.grey,
                   ),
                 ),
-                SizedBox(height: 4),
-                Text(value,
+                const SizedBox(height: 4),
+                Text(
+                  value,
                   style: TextStyle(
                     fontSize: TSizes.fontSizeMd,
-                    fontWeight: TSizes.fontWeightW500,
+                    fontWeight: FontWeight.w500,
                     color: valueColor ?? TColors.primary,
                   ),
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
+  String _getDiscountPercentage(dynamic discountRate) {
+    if (discountRate == null) return "0.0";
+
+    try {
+      double rate = 0.0;
+      if (discountRate is num) {
+        rate = discountRate.toDouble();
+      } else if (discountRate is String) {
+        rate = double.tryParse(discountRate) ?? 0.0;
+      }
+      return (rate * 100).toStringAsFixed(1);
+    } catch (e) {
+      return "0.0";
+    }
+  }
+
+  Color _getTierColor(String? tier) {
+    switch (tier?.toLowerCase()) {
+      case 'gold':
+        return Colors.amber;
+      case 'silver':
+        return Colors.grey;
+      case 'bronze':
+        return Colors.brown;
+      default:
+        return TColors.primary;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Scaffold(
+        backgroundColor: TColors.light,
+        body: Center(
+          child: CircularProgressIndicator(color: TColors.primary),
+        ),
+      );
+    }
+
     return Scaffold(
-      backgroundColor: TColors.primary,
+      backgroundColor: TColors.primaryBackground,
       body: Stack(
         children: [
           Container(
@@ -90,7 +163,7 @@ class ProfileDetailScreen extends StatelessWidget{
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(40),
                 bottomRight: Radius.circular(40),
               ),
@@ -101,11 +174,11 @@ class ProfileDetailScreen extends StatelessWidget{
                   top: -50,
                   right: -50,
                   child: Container(
-                  width: 150,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    color: TColors.light.withOpacity(0.1),
-                    shape: BoxShape.circle,
+                    width: 150,
+                    height: 150,
+                    decoration: BoxDecoration(
+                      color: TColors.light.withOpacity(0.1),
+                      shape: BoxShape.circle,
                     ),
                   ),
                 ),
@@ -116,30 +189,45 @@ class ProfileDetailScreen extends StatelessWidget{
                   child: Row(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.arrow_back_ios),
+                        icon: const Icon(Icons.arrow_back_ios),
+                        color: TColors.light,
                         onPressed: () {
-                            Navigator.of(context).pop();
+                          Navigator.of(context).pop();
                         },
                       ),
-                      Expanded(
-                        child: Text("Peronal Details",
+                      const Expanded(
+                        child: Text(
+                          "Personal Details",
                           style: TextStyle(
                             color: TColors.light,
                             fontSize: TSizes.fontSizeLg,
-                            fontWeight: TSizes.fontWeightBold,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.edit),
+                        icon: const Icon(Icons.edit),
                         color: TColors.light,
-                        onPressed: () {
-                          Navigator.push(context, 
-                          MaterialPageRoute(
-                            builder: (context) => ProfileDetailEditScreen(),
-                            )
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProfileEditScreen(
+                                userProfile: userProfile,
+                                onProfileUpdated: (updates) {
+                                  setState(() {
+                                    userProfile?.addAll(updates);
+                                  });
+                                  print('Profile updated in detail: ${updates.keys}');
+                                },
+                              ),
+                            ),
                           );
-                        }, 
+
+                          if (result == true) {
+                            _loadUserProfile();
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -151,80 +239,133 @@ class ProfileDetailScreen extends StatelessWidget{
             padding: EdgeInsets.only(
               top: MediaQuery.of(context).size.height * 0.15,
             ),
-            child: Column(
-              children: [
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(colors: TColors.primaryGradient,
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: TColors.primaryGradient,
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      border: Border.all(color: TColors.light, width: 4),
                     ),
-                    border: Border.all(color: TColors.light, width: 4),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(60),
+                      child: userProfile?['avatar'] != null &&
+                              userProfile!['avatar'] != "https://via.placeholder.com/100" &&
+                              userProfile!['avatar'].toString().isNotEmpty
+                          ? Image.network(
+                              userProfile!['avatar'],
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(
+                                  Icons.person,
+                                  size: 60,
+                                  color: TColors.light,
+                                );
+                              },
+                            )
+                          : const Icon(
+                              Icons.person,
+                              size: 60,
+                              color: TColors.light,
+                            ),
+                    ),
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(60),
-                    child: Image.asset('assets/images/avatar/profile.jpg'),
+                  const SizedBox(height: 24),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 24),
+                    decoration: BoxDecoration(
+                      color: TColors.light,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: TColors.dark.withOpacity(0.1),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSection(
+                          "Personal Information",
+                          [
+                            _buildInfoRow(
+                              icon: Icons.person,
+                              label: "Full Name",
+                              value: userProfile?['userName']?.toString() ?? "N/A",
+                            ),
+                            _buildInfoRow(
+                              icon: Icons.mail,
+                              label: "Email",
+                              value: userProfile?['email']?.toString() ?? "N/A",
+                            ),
+                            _buildInfoRow(
+                              icon: Icons.phone,
+                              label: "Phone",
+                              value: userProfile?['phoneNumber']?.toString() ?? "N/A",
+                            ),
+                          ],
+                        ),
+                        _buildSection(
+                          "Membership Information",
+                          [
+                            _buildInfoRow(
+                              icon: Icons.star,
+                              label: "Membership Tier",
+                              value: userProfile?['membershipTier']?.toString() ?? "Basic",
+                              valueColor: _getTierColor(userProfile?['membershipTier']?.toString()),
+                            ),
+                            _buildInfoRow(
+                              icon: Icons.wallet,
+                              label: "Points",
+                              value: "${userProfile?['points'] ?? 0} pts",
+                              valueColor: TColors.primary,
+                            ),
+                            _buildInfoRow(
+                              icon: Icons.discount,
+                              label: "Discount Rate",
+                              value: "${_getDiscountPercentage(userProfile?['discountRate'])}%",
+                              valueColor: Colors.green,
+                            ),
+                          ],
+                        ),
+                        _buildSection(
+                          "Statistics",
+                          [
+                            _buildInfoRow(
+                              icon: Icons.shopping_bag,
+                              label: "Total Orders",
+                              value: "${userProfile?['orderCount'] ?? 0}",
+                              valueColor: Colors.blue,
+                            ),
+                            _buildInfoRow(
+                              icon: Icons.favorite,
+                              label: "Wishlist Items",
+                              value: "${userProfile?['wishlistCount'] ?? 0}",
+                              valueColor: Colors.red,
+                            ),
+                            _buildInfoRow(
+                              icon: Icons.local_shipping,
+                              label: "Delivered Orders",
+                              value: "${userProfile?['shippingCount'] ?? 0}",
+                              valueColor: Colors.orange,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(height: 24),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 24),
-                  decoration: BoxDecoration(
-                    color: TColors.light,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: TColors.dark.withOpacity(0.1),
-                        blurRadius: 20,
-                        offset: Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildSection(
-                        "Personanl Infomation",
-                        [
-                          _buildInfoRow(
-                            icon: Icons.person, 
-                            label: "Full Name", 
-                            value: "Vo Tan Dung",
-                          ),
-                          _buildInfoRow(
-                            icon: Icons.mail, 
-                            label: "Email", 
-                            value: "iamvotandung26@gmail.com",
-                          ),
-                          _buildInfoRow(
-                            icon: Icons.phone, 
-                            label: "Phone", 
-                            value: "+84 942 084 320",
-                          ),
-                        ],
-                      ),
-                      _buildSection(
-                        "More",
-                        [
-                          _buildInfoRow(
-                            icon: Icons.calendar_today, 
-                            label: "Date of Birth", 
-                            value: "26 Sep 2004",
-                          ),
-                          _buildInfoRow(
-                            icon: Icons.person, 
-                            label: "Gender", 
-                            value: "Male",
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                  const SizedBox(height: 24),
+                ],
+              ),
             ),
           ),
         ],

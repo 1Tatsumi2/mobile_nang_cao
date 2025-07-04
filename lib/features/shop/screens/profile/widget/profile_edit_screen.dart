@@ -4,27 +4,26 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:do_an_mobile/services/user_service.dart';
-import 'package:do_an_mobile/services/auth_service.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:do_an_mobile/widgets/custom_text_field.dart';
 import 'package:do_an_mobile/widgets/gradient_button.dart';
 
-class ProfileDetailEdit extends StatefulWidget {
+class ProfileEditScreen extends StatefulWidget {
   final Map<String, dynamic>? userProfile;
-  final Function(Map<String, dynamic>)? onProfileUpdated; // 🔹 THÊM CALLBACK
+  final Function(Map<String, dynamic>)? onProfileUpdated;
   
-  const ProfileDetailEdit({
+  const ProfileEditScreen({
     super.key, 
     this.userProfile,
-    this.onProfileUpdated, // 🔹 THÊM PARAMETER
+    this.onProfileUpdated,
   });
 
   @override
-  State<ProfileDetailEdit> createState() => _ProfileDetailEditState();
+  State<ProfileEditScreen> createState() => _ProfileEditScreenState();
 }
 
-class _ProfileDetailEditState extends State<ProfileDetailEdit> {
+class _ProfileEditScreenState extends State<ProfileEditScreen> {
   // Form key
   final _formKey = GlobalKey<FormState>();
   
@@ -101,7 +100,7 @@ class _ProfileDetailEditState extends State<ProfileDetailEdit> {
     }
   }
 
-  // Upload avatar method - CẬP NHẬT
+  // Upload avatar method
   Future<void> _uploadAvatar() async {
     if (_selectedImage == null || widget.userProfile?['email'] == null) return;
 
@@ -132,7 +131,7 @@ class _ProfileDetailEditState extends State<ProfileDetailEdit> {
           widget.userProfile?['avatar'] = avatarUrl;
         });
         
-        // 🔹 NOTIFY PARENT ABOUT PROFILE UPDATE
+        // Notify parent about profile update
         if (widget.onProfileUpdated != null) {
           widget.onProfileUpdated!({'avatar': avatarUrl});
         }
@@ -164,7 +163,7 @@ class _ProfileDetailEditState extends State<ProfileDetailEdit> {
     });
   }
 
-  // Save profile method - CẬP NHẬT
+  // Save profile method
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -185,7 +184,7 @@ class _ProfileDetailEditState extends State<ProfileDetailEdit> {
       );
 
       if (success && mounted) {
-        // 🔹 NOTIFY PARENT ABOUT PROFILE UPDATE
+        // Notify parent about profile update
         if (widget.onProfileUpdated != null) {
           widget.onProfileUpdated!({
             'userName': _userNameController.text.trim(),
@@ -294,7 +293,7 @@ class _ProfileDetailEditState extends State<ProfileDetailEdit> {
               child: const Icon(
                 Icons.camera_alt,
                 color: TColors.light,
-                size: TSizes.iconLg,
+                size: TSizes.iconMd,
               ),
             ),
           ),

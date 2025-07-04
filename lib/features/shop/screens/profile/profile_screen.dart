@@ -1,32 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:do_an_mobile/features/authentication/screens/login/login.dart';
-import 'package:do_an_mobile/features/authentication/screens/password_configuration/forget_password.dart';
-
 import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_address_screen.dart';
 import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_detail_screen.dart';
 import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_notification_screen.dart';
 import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_order_screen.dart';
 import 'package:do_an_mobile/services/user_service.dart';
-=======
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_address_screen.dart';
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_detail_screen.dart';
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_notification_screen.dart';
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_order_screen.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 
 class ProfileScreen extends StatefulWidget {
-=======
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: ProfileScreen(),
-  ));
-}
-
-class ProfileScreen extends StatelessWidget {
->>>>>>> 21fc3bcb6e722114e94fd3ae2d7c2a178181bc5c:lib/features/shop/screens/profile/profile_screen.dart
   const ProfileScreen({super.key});
 
   @override
@@ -50,7 +33,6 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
     super.dispose();
   }
 
-  // 🔹 LISTEN KHI APP QUAY LẠI FOREGROUND
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
@@ -59,7 +41,6 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
     }
   }
 
-  // Load user profile from API
   Future<void> _loadUserProfile() async {
     try {
       print('🔄 Loading user profile...');
@@ -83,7 +64,6 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
     }
   }
 
-  // Refresh profile data
   Future<void> _refreshProfile() async {
     try {
       print('🔄 Refreshing profile data...');
@@ -102,7 +82,6 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
     }
   }
 
-  // Logout functionality
   Future<void> _logout() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -119,7 +98,6 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
     }
   }
 
-  // Build header section with background and avatar
   Widget _buildHeaderSection() {
     return Container(
       height: MediaQuery.of(context).size.height * 0.35,
@@ -136,7 +114,6 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
       ),
       child: Stack(
         children: [
-          // Decorative circles
           Positioned(
             top: -50,
             right: -50,
@@ -144,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
               width: 150,
               height: 150,
               decoration: BoxDecoration(
-                color: TColors.light.withOpacity(0.1),
+                color: TColors.light.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
             ),
@@ -156,7 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: TColors.light.withOpacity(0.05),
+                color: TColors.light.withValues(alpha: 0.05),
                 shape: BoxShape.circle,
               ),
             ),
@@ -166,7 +143,6 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
     );
   }
 
-  // Build user info card
   Widget _buildUserInfoCard() {
     return Container(
       width: MediaQuery.of(context).size.width * 0.85,
@@ -177,7 +153,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: TColors.dark.withOpacity(0.08),
+            color: TColors.dark.withValues(alpha: 0.08),
             blurRadius: 25,
             offset: const Offset(0, 15),
           ),
@@ -197,7 +173,6 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
     );
   }
 
-  // Build avatar with loading and error handling
   Widget _buildAvatarSection() {
     return Container(
       width: 100,
@@ -215,7 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
         ),
         boxShadow: [
           BoxShadow(
-            color: TColors.primary.withOpacity(0.3),
+            color: TColors.primary.withValues(alpha: 0.3),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -253,7 +228,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
         errorBuilder: (context, error, stackTrace) {
           print('❌ Error loading avatar: $error');
           return Container(
-            color: TColors.primary.withOpacity(0.1),
+            color: TColors.primary.withValues(alpha: 0.1),
             child: const Icon(
               Icons.person,
               size: 50,
@@ -291,7 +266,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
       userProfile?['email'] ?? "email@example.com",
       style: TextStyle(
         fontSize: 14,
-        color: TColors.dark.withOpacity(0.7),
+        color: TColors.dark.withValues(alpha: 0.7),
       ),
       textAlign: TextAlign.center,
     );
@@ -312,7 +287,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
         borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
-            color: _getTierColor(tier).withOpacity(0.3),
+            color: _getTierColor(tier).withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -340,7 +315,6 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
     );
   }
 
-  // Build statistics cards
   Widget _buildStatisticsSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -389,12 +363,12 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
         color: TColors.light,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: color.withOpacity(0.2),
+          color: color.withValues(alpha: 0.2),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -436,7 +410,6 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
     );
   }
 
-  // Build menu sections
   Widget _buildMenuSection({
     required String title,
     required List<Widget> items,
@@ -448,7 +421,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: TColors.dark.withOpacity(0.05),
+            color: TColors.dark.withValues(alpha: 0.05),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -491,7 +464,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
         decoration: BoxDecoration(
           border: isLast ? null : Border(
             bottom: BorderSide(
-              color: TColors.dark.withOpacity(0.1),
+              color: TColors.dark.withValues(alpha: 0.1),
               width: 0.5,
             ),
           ),
@@ -502,8 +475,8 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: isDestructive
-                    ? Colors.red.withOpacity(0.1)
-                    : color.withOpacity(0.1),
+                    ? Colors.red.withValues(alpha: 0.1)
+                    : color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -530,7 +503,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
                     subtitle,
                     style: TextStyle(
                       fontSize: 12,
-                      color: TColors.dark.withOpacity(0.6),
+                      color: TColors.dark.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
@@ -538,7 +511,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
             ),
             Icon(
               Icons.chevron_right,
-              color: TColors.dark.withOpacity(0.4),
+              color: TColors.dark.withValues(alpha: 0.4),
               size: 20,
             ),
           ],
@@ -547,17 +520,6 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
     );
   }
 
-  // Method để update profile data realtime
-  void _updateProfileData(Map<String, dynamic> updates) {
-    if (mounted) {
-      setState(() {
-        userProfile?.addAll(updates);
-      });
-      print('✅ Profile updated in main screen: ${updates.keys}');
-    }
-  }
-
-  // Helper methods for tier styling
   Color _getTierColor(String tier) {
     switch (tier.toLowerCase()) {
       case 'gold':
@@ -630,27 +592,22 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
           physics: const AlwaysScrollableScrollPhysics(),
           child: Stack(
             children: [
-              // Header background
               _buildHeaderSection(),
               
-              // Content
               Padding(
                 padding: EdgeInsets.only(
                   top: MediaQuery.of(context).size.height * 0.15,
                 ),
                 child: Column(
                   children: [
-                    // User info card
                     _buildUserInfoCard(),
                     
                     const SizedBox(height: 24),
                     
-                    // Statistics section
                     _buildStatisticsSection(),
                     
                     const SizedBox(height: 24),
                     
-                    // Account Settings
                     _buildMenuSection(
                       title: 'Account Settings',
                       items: [
@@ -659,30 +616,13 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
                           title: 'Personal Details',
                           subtitle: 'Update your personal information',
                           onTap: () async {
-                            final result = await Navigator.push(
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const ProfileDetail(),
+                                builder: (context) => const ProfileDetailScreen(),
                               ),
                             );
-                            
-                            // 🔹 FORCE REFRESH MỖI KHI QUAY LẠI
-                            print('Returned from ProfileDetail, refreshing...');
                             await _refreshProfile();
-                          },
-                          color: TColors.primary,
-                        ),
-                        _buildMenuItem(
-                          icon: Icons.lock_outlined,
-                          title: 'Change Password',
-                          subtitle: 'Update your password',
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ForgetPassword(),
-                              ),
-                            );
                           },
                           color: TColors.primary,
                         ),
@@ -694,7 +634,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ProfileNotification(),
+                                builder: (context) => const ProfileNotificationScreen(),
                               ),
                             );
                           },
@@ -704,9 +644,8 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
                       ],
                     ),
                     
-                    // Shopping Preferences
                     _buildMenuSection(
-                      title: 'Shopping Preferences',
+                      title: 'My Activity',
                       items: [
                         _buildMenuItem(
                           icon: Icons.shopping_bag_outlined,
@@ -716,7 +655,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ProfileOrder(),
+                                builder: (context) => const ProfileOrderScreen(),
                               ),
                             );
                           },
@@ -724,13 +663,13 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
                         ),
                         _buildMenuItem(
                           icon: Icons.location_on_outlined,
-                          title: 'Shipping Addresses',
-                          subtitle: 'Manage your delivery addresses',
+                          title: 'Addresses',
+                          subtitle: 'Manage your addresses',
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const ProfileAddress(),
+                                builder: (context) => const ProfileAddressScreen(),
                               ),
                             );
                           },
@@ -741,7 +680,11 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
                           title: 'Payment Methods',
                           subtitle: 'Manage your payment options',
                           onTap: () {
-                            // TODO: Implement payment methods
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Payment methods feature coming soon!'),
+                              ),
+                            );
                           },
                           color: Colors.orange,
                           isLast: true,
@@ -749,16 +692,19 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
                       ],
                     ),
                     
-                    // More Options
                     _buildMenuSection(
-                      title: 'More',
+                      title: 'More Options',
                       items: [
                         _buildMenuItem(
                           icon: Icons.settings_outlined,
                           title: 'Settings',
                           subtitle: 'App preferences and settings',
                           onTap: () {
-                            // TODO: Implement settings
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Settings feature coming soon!'),
+                              ),
+                            );
                           },
                           color: Colors.grey,
                         ),
@@ -767,9 +713,13 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
                           title: 'Help & Support',
                           subtitle: 'Get help and contact us',
                           onTap: () {
-                            // TODO: Implement help & support
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Help & Support feature coming soon!'),
+                              ),
+                            );
                           },
-                          color: Colors.purple,
+                          color: Colors.grey,
                         ),
                         _buildMenuItem(
                           icon: Icons.logout,
@@ -805,121 +755,9 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
                           isLast: true,
                         ),
                       ],
-                    SizedBox(height: 24),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        children: [
-                          _buildSection(
-                          title: 'Account Setting', 
-                          items: [
-                            _buildMenuItem(
-                              icon: Icons.person_outlined, 
-                              title: 'Personal Details', 
-                              subtitle: "Update your personal infomation", 
-                              onTap: () {
-                                Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => ProfileDetailScreen()),
-                                );
-                              }, 
-                              color: TColors.primary
-                              ),
-                              _buildMenuItem(
-                              icon: Icons.lock_outlined, 
-                              title: 'Change Password', 
-                              subtitle: "Update your password",
-                              onTap: () {
-                                Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => ForgetPassword()),
-                                );
-                              }, 
-                              color: TColors.primary
-                              ),
-                              _buildMenuItem(
-                              icon: Icons.notifications_outlined, 
-                              title: 'Notifiaction', 
-                              subtitle: "Manage your notification", 
-                              onTap: () {
-                                Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) =>ProfileNotificationScreen()),
-                                );
-                              }, 
-                              color: TColors.primary
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 24),
-                          _buildSection(
-                          title: 'Shopping Preferences', 
-                          items: [
-                            _buildMenuItem(
-                              icon: Icons.shopping_bag_outlined, 
-                              title: 'Your Orders', 
-                              subtitle: "View your orders history", 
-                              onTap: () {
-                                Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => ProfileOrderScreen()),
-                                );
-                              }, 
-                              color: TColors.primary
-                              ),
-                              _buildMenuItem(
-                              icon: Icons.location_on_outlined, 
-                              title: 'Shipping Address', 
-                              subtitle: "Manage your delivery addresses",
-                              onTap: () {
-                                Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => ProfileAddressScreen()),
-                                );
-                              }, 
-                              color: TColors.primary
-                              ),
-                              _buildMenuItem(
-                              icon: Icons.payment_outlined, 
-                              title: 'Payment Methods', 
-                              subtitle: "Manage your payment options", 
-                              onTap: () {}, 
-                              color: TColors.primary
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 24),
-                          _buildSection(
-                          title: 'More', 
-                          items: [
-                            _buildMenuItem(
-                              icon: Icons.settings_outlined, 
-                              title: 'Settings', 
-                              subtitle: "App preferences and settings", 
-                              onTap: () {}, 
-                              color: TColors.primary
-                              ),
-                              _buildMenuItem(
-                              icon: Icons.help_outlined, 
-                              title: 'Help & Support', 
-                              subtitle: "Get help and contact us",
-                              onTap: () {}, 
-                              color: TColors.primary
-                              ),
-                              _buildMenuItem(
-                              icon: Icons.logout, 
-                              title: 'Log Out', 
-                              subtitle: "Sign out from your account", 
-                              onTap: () {
-                                Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(builder: (context) => LoginScreen()),
-                                );
-                              }, 
-                              color: TColors.dark,
-                              isDestructive: true,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
                     ),
                     
-                    const SizedBox(height: 100),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
