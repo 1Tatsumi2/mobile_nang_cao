@@ -1,19 +1,17 @@
-// ignore_for_file: deprecated_member_use
-
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_edit.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_edit_screen.dart';
 import 'package:do_an_mobile/services/user_service.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 
-class ProfileDetail extends StatefulWidget {
-  const ProfileDetail({super.key});
+class ProfileDetailScreen extends StatefulWidget {
+  const ProfileDetailScreen({super.key});
 
   @override
-  State<ProfileDetail> createState() => _ProfileDetailState();
+  State<ProfileDetailScreen> createState() => _ProfileDetailScreenState();
 }
 
-class _ProfileDetailState extends State<ProfileDetail> {
+class _ProfileDetailScreenState extends State<ProfileDetailScreen> {
   Map<String, dynamic>? userProfile;
   bool isLoading = true;
 
@@ -107,7 +105,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
                 ),
               ],
             ),
-          ), // ← THÊM DẤU PHẨY TẠI ĐÂY
+          ),
         ],
       ),
     );
@@ -154,7 +152,7 @@ class _ProfileDetailState extends State<ProfileDetail> {
     }
 
     return Scaffold(
-      backgroundColor: TColors.primary,
+      backgroundColor: TColors.primaryBackground,
       body: Stack(
         children: [
           Container(
@@ -214,10 +212,9 @@ class _ProfileDetailState extends State<ProfileDetail> {
                           final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ProfileDetailEdit(
+                              builder: (context) => ProfileEditScreen(
                                 userProfile: userProfile,
                                 onProfileUpdated: (updates) {
-                                  // 🔹 UPDATE LOCAL STATE IMMEDIATELY
                                   setState(() {
                                     userProfile?.addAll(updates);
                                   });
@@ -227,7 +224,6 @@ class _ProfileDetailState extends State<ProfileDetail> {
                             ),
                           );
 
-                          // 🔹 REFRESH PROFILE DATA AFTER EDIT
                           if (result == true) {
                             _loadUserProfile();
                           }

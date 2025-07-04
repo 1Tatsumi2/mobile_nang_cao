@@ -1,12 +1,14 @@
 // ignore_for_file: deprecated_member_use, use_key_in_widget_constructors, unused_element
+import 'package:do_an_mobile/features/shop/screens/cart/widgets/order_detail_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/cart/widgets/order_tracking_screen.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 
-class ProfileOrder extends StatelessWidget {
-  //const ProfileOrder ({super.key});
+class ProfileOrderScreen extends StatelessWidget {
+  const ProfileOrderScreen({super.key});
 
-  final orders =  [
+  final List<Map<String, dynamic>> orders = const [
     {
       'orderId': '12345',
       'date': 'June 1, 2025',
@@ -14,25 +16,22 @@ class ProfileOrder extends StatelessWidget {
       'items': ['Merdi Bag (2x)', 'Merdi Handbag (1x)'],
       'total': 159.99,
     },
-
     {
-      'orderId': '12345',
+      'orderId': '12346',
       'date': 'June 1, 2025',
       'status': 'Delivered',
       'items': ['Merdi Bag (2x)', 'Merdi Handbag (1x)'],
       'total': 159.99,
     },
-
     {
-      'orderId': '12345',
+      'orderId': '12347',
       'date': 'June 1, 2025',
       'status': 'Cancelled',
       'items': ['Merdi Bag (2x)', 'Merdi Handbag (1x)'],
       'total': 159.99,
     },
-
     {
-      'orderId': '12345',
+      'orderId': '12348',
       'date': 'June 1, 2025',
       'status': 'Processing',
       'items': ['Merdi Bag (2x)', 'Merdi Handbag (1x)'],
@@ -65,40 +64,40 @@ class ProfileOrder extends StatelessWidget {
     required BuildContext context,
   }) {
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: TColors.light,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: TColors.dark.withOpacity(0.05),
+            color: TColors.dark.withValues(alpha: 0.05),
             blurRadius: 10,
-            offset: Offset(0, 5),
+            offset: const Offset(0, 5),
           ),
         ],
       ),
       child: InkWell(
-        onTap: () {},
+        onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Order #$orderId',
-                  style: TextStyle(
-                    fontSize: TSizes.fontSizeMd,
-                    fontWeight: TSizes.fontWeightBold,
-                    color: TColors.primary,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Order #$orderId',
+                    style: const TextStyle(
+                      fontSize: TSizes.fontSizeMd,
+                      fontWeight: TSizes.fontWeightBold,
+                      color: TColors.primary,
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(status).withOpacity(0.1),
+                      color: _getStatusColor(status).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(status,
@@ -109,67 +108,72 @@ class ProfileOrder extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 12),
-                  Text(
-                    'Ordered on $date',
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Ordered on $date',
+                style: const TextStyle(
+                  fontSize: TSizes.fontSizeSm,
+                  color: TColors.dark,
+                ),
+              ),
+              const SizedBox(height: 12),
+              const Divider(),
+              const SizedBox(height: 12),
+              Text(
+                '${items.length} ${items.length == 1 ? 'item' : 'items'}:',
+                style: const TextStyle(
+                  fontSize: TSizes.fontSizeSm,
+                  color: TColors.dark,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                items.join(', '),
+                style: const TextStyle(
+                  fontSize: TSizes.fontSizeSm,
+                  color: TColors.dark,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Total:",
                     style: TextStyle(
                       fontSize: TSizes.fontSizeMd,
+                      fontWeight: TSizes.fontWeightBold,
+                      color: TColors.primary,
+                    ),
+                  ),
+                  Text(
+                    "\$${total.toStringAsFixed(2)}",
+                    style: const TextStyle(
+                      fontSize: TSizes.fontSizeMd,
+                      fontWeight: TSizes.fontWeightBold,
                       color: TColors.primary,
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 12),
-                  Divider(),
-                  SizedBox(height: 12),
-                  Text(
-                    '${items.length} ${items.length == 1 ? 'item' : 'item'}:',
-                    style: TextStyle(
-                      fontSize: TSizes.fontSizeSm,
-                      color: TColors.dark,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    items.join(', '),
-                    style: TextStyle(
-                      fontSize: TSizes.fontSizeSm,
-                      color: TColors.dark,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Total:",
-                        style: TextStyle(
-                          fontSize: TSizes.fontSizeMd,
-                          fontWeight: TSizes.fontWeightBold,
-                          color: TColors.primary,
-                        ),
-                      ),
-                      Text(
-                        "\$${total.toStringAsFixed(2)}",
-                        style: TextStyle(
-                          fontSize: TSizes.fontSizeMd,
-                          fontWeight: TSizes.fontWeightBold,
-                          color: TColors.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Row(
                 children: [
-                  Spacer(),
+                  const Spacer(),
                   TextButton.icon(
-                    icon: Icon(Icons.local_shipping_outlined, size: TSizes.iconLg),
+                    icon: const Icon(Icons.local_shipping_outlined, size: TSizes.iconSm),
                     onPressed: () {
-                      //Navigator.push(context, MaterialPageRoute(builder: (context) => TrackOrderScreen()));
-                    }, label : Text("Track Order"),
+                      Navigator.push(
+                        context, 
+                        MaterialPageRoute(builder: (context) => const OrderTrackingScreen())
+                      );
+                    }, 
+                    label: const Text("Track Order"),
                     style: TextButton.styleFrom(
                       foregroundColor: TColors.primary,
                     ),
@@ -201,7 +205,7 @@ class ProfileOrder extends StatelessWidget {
                   end: Alignment.bottomRight,
                 ),
               ),
-              child: FlexibleSpaceBar(
+              child: const FlexibleSpaceBar(
                 centerTitle: true,
                 title: Text('My Orders',
                   style: TextStyle(
@@ -214,19 +218,19 @@ class ProfileOrder extends StatelessWidget {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: TColors.light,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: TColors.dark,
+                          color: TColors.dark.withValues(alpha: 0.05),
                           blurRadius: 10,
-                          offset: Offset(0, 5),
+                          offset: const Offset(0, 5),
                         ),
                       ],
                     ),
@@ -236,21 +240,21 @@ class ProfileOrder extends StatelessWidget {
                           child: TextField(
                             decoration: InputDecoration(
                               hintText: "Search orders...",
-                              hintStyle: TextStyle(
+                              hintStyle: const TextStyle(
                                 color: TColors.textSecondary,
                               ),
                               border: InputBorder.none,
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.search,
                                 color: TColors.textSecondary,
                               ),
                               suffixIcon: Container(
-                                  padding: EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: TColors.primary.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Icon(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: TColors.primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
                                   Icons.filter_list,
                                   color: TColors.primary,
                                 ),
@@ -261,16 +265,23 @@ class ProfileOrder extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(height: 24),
-                  ...orders.map((order) => _buildOrderCard(
+                  const SizedBox(height: 24),
+                  ...orders.map(
+                    (order) => _buildOrderCard(
                       orderId: order['orderId'] as String, 
                       date: order['date'] as String, 
                       status: order['status'] as String, 
-                      items: order['items'] as List<String>, 
+                      items: List<String>.from(order['items']), 
                       total: order['total'] as double, 
                       onTap: () {
-                        //Navigator.push(context, MaterialPageRoute(builder: (context) => TrackOrderScreen));
-                      }, context: context,
+                        Navigator.push(
+                          context, 
+                          MaterialPageRoute(
+                            builder: (context) => const OrderDetailScreen()
+                          )
+                        );
+                      }, 
+                      context: context,
                     ),
                   ),
                 ],
