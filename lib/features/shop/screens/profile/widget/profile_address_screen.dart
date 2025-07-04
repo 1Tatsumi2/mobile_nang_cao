@@ -1,22 +1,19 @@
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/profile_screen.dart';
 import 'package:do_an_mobile/services/user_service.dart';
 import 'package:do_an_mobile/services/auth_service.dart';
-import 'package:do_an_mobile/features/shop/screens/profile/profile_screen.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:do_an_mobile/widgets/custom_text_field.dart';
-import 'package:do_an_mobile/widgets/gradient_button.dart';
 import 'package:flutter/material.dart';
 
-<<<<<<< HEAD:lib/features/shop/screens/profile/widget/profile_address.dart
-class ProfileAddress extends StatefulWidget {
-  const ProfileAddress({super.key});
+class ProfileAddressScreen extends StatefulWidget {
+  const ProfileAddressScreen({super.key});
 
   @override
-  State<ProfileAddress> createState() => _ProfileAddressState();
+  State<ProfileAddressScreen> createState() => _ProfileAddressScreenState();
 }
 
-class _ProfileAddressState extends State<ProfileAddress> {
+class _ProfileAddressScreenState extends State<ProfileAddressScreen> {
   List<Map<String, dynamic>> addresses = [];
   bool isLoading = true;
   int selectedAddressIndex = -1;
@@ -131,43 +128,65 @@ class _ProfileAddressState extends State<ProfileAddress> {
     );
   }
 
+  void _showDeleteConfirmDialog(int addressId, int index) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Address'),
+        content: const Text('Are you sure you want to delete this address?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteAddress(addressId, index);
+            },
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Address', style: TextStyle(fontWeight: TSizes.fontWeightBold)),
+        title: const Text('Address', style: TextStyle(fontWeight: TSizes.fontWeightBold)),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
+          icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
             Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => ProfileScreen()),
+              MaterialPageRoute(builder: (context) => const ProfileScreen()),
               (Route<dynamic> route) => false,
             );
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: _showAddAddressDialog,
           ),
         ],
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : addresses.isEmpty
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.location_off, size: 64, color: Colors.grey),
-                      SizedBox(height: 16),
-                      Text('No addresses found'),
-                      SizedBox(height: 16),
+                      const Icon(Icons.location_off, size: 64, color: Colors.grey),
+                      const SizedBox(height: 16),
+                      const Text('No addresses found'),
+                      const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: _showAddAddressDialog,
-                        child: Text('Add Address'),
+                        child: const Text('Add Address'),
                       ),
                     ],
                   ),
@@ -179,7 +198,7 @@ class _ProfileAddressState extends State<ProfileAddress> {
                     final isSelected = address['isDefault'] == true;
 
                     return Card(
-                      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: ListTile(
                         leading: GestureDetector(
                           onTap: () => _setDefaultAddress(address['id'], index),
@@ -195,7 +214,7 @@ class _ProfileAddressState extends State<ProfileAddress> {
                               ),
                             ),
                             child: isSelected
-                                ? Icon(Icons.check, size: 12, color: TColors.light)
+                                ? const Icon(Icons.check, size: 12, color: TColors.light)
                                 : null,
                           ),
                         ),
@@ -204,17 +223,17 @@ class _ProfileAddressState extends State<ProfileAddress> {
                             Expanded(
                               child: Text(
                                 address['fullName'] ?? '',
-                                style: TextStyle(fontWeight: TSizes.fontWeightBold),
+                                style: const TextStyle(fontWeight: TSizes.fontWeightBold),
                               ),
                             ),
                             if (isSelected)
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                   color: TColors.primary,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   'Default',
                                   style: TextStyle(
                                     color: TColors.light,
@@ -228,9 +247,10 @@ class _ProfileAddressState extends State<ProfileAddress> {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            const SizedBox(height: 4),
                             Text(address['phoneNumber'] ?? ''),
-                            SizedBox(height: 4),
-                            Text(address['fullAddress'] ?? ''),
+                            const SizedBox(height: 4),
+                            Text(_buildFullAddress(address)),
                           ],
                         ),
                         trailing: PopupMenuButton<String>(
@@ -242,7 +262,7 @@ class _ProfileAddressState extends State<ProfileAddress> {
                             }
                           },
                           itemBuilder: (context) => [
-                            PopupMenuItem(
+                            const PopupMenuItem(
                               value: 'edit',
                               child: Row(
                                 children: [
@@ -252,7 +272,7 @@ class _ProfileAddressState extends State<ProfileAddress> {
                                 ],
                               ),
                             ),
-                            PopupMenuItem(
+                            const PopupMenuItem(
                               value: 'delete',
                               child: Row(
                                 children: [
@@ -272,27 +292,15 @@ class _ProfileAddressState extends State<ProfileAddress> {
     );
   }
 
-  void _showDeleteConfirmDialog(int addressId, int index) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Delete Address'),
-        content: Text('Are you sure you want to delete this address?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _deleteAddress(addressId, index);
-            },
-            child: Text('Delete', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
+  String _buildFullAddress(Map<String, dynamic> address) {
+    final parts = [
+      address['detailAddress'],
+      address['ward'],
+      address['district'],
+      address['city'],
+    ].where((part) => part != null && part.toString().isNotEmpty);
+    
+    return parts.join(', ');
   }
 }
 
@@ -345,7 +353,7 @@ class _AddAddressDialogState extends State<AddAddressDialog> {
         Navigator.pop(context);
         widget.onAddressAdded();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Address added successfully'),
             backgroundColor: Colors.green,
           ),
@@ -371,65 +379,65 @@ class _AddAddressDialogState extends State<AddAddressDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
+                const Text(
                   'Add New Address',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 CustomTextField(
                   controller: _fullNameController,
                   label: 'Full Name',
                   prefixIcon: Icons.person,
                   validator: (value) => value?.isEmpty == true ? 'Required' : null,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 CustomTextField(
                   controller: _phoneController,
                   label: 'Phone Number',
                   prefixIcon: Icons.phone,
                   validator: (value) => value?.isEmpty == true ? 'Required' : null,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 CustomTextField(
                   controller: _cityController,
                   label: 'City',
                   prefixIcon: Icons.location_city,
                   validator: (value) => value?.isEmpty == true ? 'Required' : null,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 CustomTextField(
                   controller: _districtController,
                   label: 'District',
                   prefixIcon: Icons.map,
                   validator: (value) => value?.isEmpty == true ? 'Required' : null,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 CustomTextField(
                   controller: _wardController,
                   label: 'Ward',
                   prefixIcon: Icons.place,
                   validator: (value) => value?.isEmpty == true ? 'Required' : null,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 CustomTextField(
                   controller: _detailAddressController,
                   label: 'Detail Address',
                   prefixIcon: Icons.home,
                   validator: (value) => value?.isEmpty == true ? 'Required' : null,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 CheckboxListTile(
-                  title: Text('Set as default address'),
+                  title: const Text('Set as default address'),
                   value: _isDefault,
                   onChanged: (value) {
                     setState(() {
@@ -437,26 +445,26 @@ class _AddAddressDialogState extends State<AddAddressDialog> {
                     });
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Row(
                   children: [
                     Expanded(
                       child: TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text('Cancel'),
+                        child: const Text('Cancel'),
                       ),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _addAddress,
                         child: _isLoading
-                            ? SizedBox(
+                            ? const SizedBox(
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : Text('Add'),
+                            : const Text('Add'),
                       ),
                     ),
                   ],
@@ -537,7 +545,7 @@ class _EditAddressDialogState extends State<EditAddressDialog> {
         Navigator.pop(context);
         widget.onAddressUpdated();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Address updated successfully'),
             backgroundColor: Colors.green,
           ),
@@ -563,65 +571,65 @@ class _EditAddressDialogState extends State<EditAddressDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
+                const Text(
                   'Edit Address',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 CustomTextField(
                   controller: _fullNameController,
                   label: 'Full Name',
                   prefixIcon: Icons.person,
                   validator: (value) => value?.isEmpty == true ? 'Required' : null,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 CustomTextField(
                   controller: _phoneController,
                   label: 'Phone Number',
                   prefixIcon: Icons.phone,
                   validator: (value) => value?.isEmpty == true ? 'Required' : null,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 CustomTextField(
                   controller: _cityController,
                   label: 'City',
                   prefixIcon: Icons.location_city,
                   validator: (value) => value?.isEmpty == true ? 'Required' : null,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 CustomTextField(
                   controller: _districtController,
                   label: 'District',
                   prefixIcon: Icons.map,
                   validator: (value) => value?.isEmpty == true ? 'Required' : null,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 CustomTextField(
                   controller: _wardController,
                   label: 'Ward',
                   prefixIcon: Icons.place,
                   validator: (value) => value?.isEmpty == true ? 'Required' : null,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 CustomTextField(
                   controller: _detailAddressController,
                   label: 'Detail Address',
                   prefixIcon: Icons.home,
                   validator: (value) => value?.isEmpty == true ? 'Required' : null,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 CheckboxListTile(
-                  title: Text('Set as default address'),
+                  title: const Text('Set as default address'),
                   value: _isDefault,
                   onChanged: (value) {
                     setState(() {
@@ -629,26 +637,26 @@ class _EditAddressDialogState extends State<EditAddressDialog> {
                     });
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Row(
                   children: [
                     Expanded(
                       child: TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: Text('Cancel'),
+                        child: const Text('Cancel'),
                       ),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _updateAddress,
                         child: _isLoading
-                            ? SizedBox(
+                            ? const SizedBox(
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : Text('Update'),
+                            : const Text('Update'),
                       ),
                     ),
                   ],
