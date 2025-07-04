@@ -1,10 +1,12 @@
 // ignore_for_file: deprecated_member_use, use_key_in_widget_constructors, unused_element
+import 'package:do_an_mobile/features/shop/screens/cart/widgets/order_detail_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/cart/widgets/order_tracking_screen.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 
-class ProfileOrder extends StatelessWidget {
-  //const ProfileOrder ({super.key});
+class ProfileOrderScreen extends StatelessWidget {
+  //const ProfileOrderScreen ({super.key});
 
   final orders =  [
     {
@@ -78,7 +80,7 @@ class ProfileOrder extends StatelessWidget {
         ],
       ),
       child: InkWell(
-        onTap: () {},
+        onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: EdgeInsets.all(16),
@@ -168,7 +170,7 @@ class ProfileOrder extends StatelessWidget {
                   TextButton.icon(
                     icon: Icon(Icons.local_shipping_outlined, size: TSizes.iconLg),
                     onPressed: () {
-                      //Navigator.push(context, MaterialPageRoute(builder: (context) => TrackOrderScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => OrderTrackingScreen()));
                     }, label : Text("Track Order"),
                     style: TextButton.styleFrom(
                       foregroundColor: TColors.primary,
@@ -262,15 +264,20 @@ class ProfileOrder extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 24),
-                  ...orders.map((order) => _buildOrderCard(
+                  ...orders.map(
+                    (order) => _buildOrderCard(
                       orderId: order['orderId'] as String, 
                       date: order['date'] as String, 
                       status: order['status'] as String, 
                       items: order['items'] as List<String>, 
                       total: order['total'] as double, 
                       onTap: () {
-                        //Navigator.push(context, MaterialPageRoute(builder: (context) => TrackOrderScreen));
-                      }, context: context,
+                        Navigator.push(
+                          context, 
+                          MaterialPageRoute(
+                          builder: (context) => OrderDetailScreen()));
+                      }, 
+                      context: context,
                     ),
                   ),
                 ],

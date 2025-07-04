@@ -5,7 +5,7 @@ import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ProfileNotification extends StatelessWidget{
+class ProfileNotificationScreen extends StatelessWidget{
 
   final List<Map<String, dynamic>> notifications = [
     {

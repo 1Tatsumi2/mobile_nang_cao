@@ -1,12 +1,14 @@
 import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_screen.dart';
 import 'package:do_an_mobile/services/user_service.dart';
 import 'package:do_an_mobile/services/auth_service.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/profile_screen.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:do_an_mobile/widgets/custom_text_field.dart';
 import 'package:do_an_mobile/widgets/gradient_button.dart';
 import 'package:flutter/material.dart';
 
+<<<<<<< HEAD:lib/features/shop/screens/profile/widget/profile_address.dart
 class ProfileAddress extends StatefulWidget {
   const ProfileAddress({super.key});
 
@@ -128,6 +130,7 @@ class _ProfileAddressState extends State<ProfileAddress> {
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
