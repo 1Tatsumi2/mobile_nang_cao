@@ -19,4 +19,7 @@ class ApiConstants {
   static const String updateAddress = '${accountApi}/UpdateAddress';
   static const String deleteAddress = '${accountApi}/DeleteAddress';
   static const String setDefaultAddress = '${accountApi}/SetDefaultAddress';
+  
+  // 🔹 THÊM ENDPOINT CHO TOP PRODUCTS
+  static const String getTopProducts = '${productApi}/GetTopProducts';
 }
