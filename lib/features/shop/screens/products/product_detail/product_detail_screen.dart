@@ -1,23 +1,32 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:do_an_mobile/features/shop/screens/cart/models/cart_item.dart';
+import 'package:do_an_mobile/services/cart_service.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:do_an_mobile/features/shop/screens/cart/cart_screen.dart';
+import 'package:do_an_mobile/utils/constants/api_constants.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ProductDetailScreen extends StatefulWidget {
+  final int productId; // Thêm dòng này
   final String image;
   final String name;
   final String price;
   final List<String>? images;
-  final String? description; // thêm trường này
+  final String? description;
+  final List<Map<String, dynamic>>? variations;
 
   const ProductDetailScreen({
     super.key,
+    required this.productId, // Thêm dòng này
     required this.image,
     required this.name,
     required this.price,
     this.images,
     this.description,
+    this.variations,
   });
 
   @override
@@ -56,6 +65,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool showPayment = false; // Thêm vào State
   bool showPackaging = false; // Thêm vào State
   bool showVariations = false; // Thêm vào State
+  int? selectedVariationId;
 
   List<String> get images => widget.images ?? [widget.image];
 
@@ -248,54 +258,82 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     AnimatedSize(
                       duration: const Duration(milliseconds: 400),
                       curve: Curves.easeInOut,
-                      child:
-                          showVariations
-                              ? Container(
-                                width: double.infinity,
-                                margin: const EdgeInsets.only(top: 0),
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: Colors.grey.shade300,
-                                    width: 1,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.08),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
+                      child: showVariations && (widget.variations != null && widget.variations!.isNotEmpty)
+                          ? Container(
+                              width: double.infinity,
+                              margin: const EdgeInsets.only(top: 0),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Colors.grey.shade300,
+                                  width: 1,
                                 ),
-                                child: SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: [
-                                      ...variations.map(
-                                        (img) => Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.08),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: widget.variations!.map((variation) {
+                                    final colorName = variation['color']?['name'] ?? '';
+                                    final size = variation['size']?.toString() ?? '';
+                                    final imageFile = variation['image'] ?? variation['imageUrl'];
+                                    final imageUrl = (imageFile != null && imageFile.toString().isNotEmpty)
+                                        ? '${ApiConstants.variationMediaUrl}$imageFile'
+                                        : null;
+                                    final isSelected = selectedVariationId == variation['id'];
+
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          selectedVariationId = variation['id'];
+                                        });
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: isSelected ? Colors.blue : Colors.transparent,
+                                            width: 2,
                                           ),
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(
-                                              6,
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                                        child: Column(
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius: BorderRadius.circular(6),
+                                              child: imageUrl != null
+                                                  ? Image.network(
+                                                      imageUrl,
+                                                      width: 100,
+                                                      height: 100,
+                                                      fit: BoxFit.cover,
+                                                      errorBuilder: (context, error, stackTrace) =>
+                                                          const Icon(Icons.broken_image, size: 40),
+                                                    )
+                                                  : const Icon(Icons.broken_image, size: 40),
                                             ),
-                                            child: Image.asset(
-                                              img,
-                                              width: 100,
-                                              height: 100,
-                                              fit: BoxFit.cover,
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              '$colorName - Size $size',
+                                              style: const TextStyle(fontSize: 14),
                                             ),
-                                          ),
+                                          ],
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    );
+                                  }).toList(),
                                 ),
-                              )
-                              : const SizedBox.shrink(),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
                     ),
                   ],
                 ),
@@ -365,14 +403,44 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CartScreen(),
-                        ),
+                    onPressed: () async {
+                      if (widget.variations != null && widget.variations!.isNotEmpty && selectedVariationId == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Please select a variation!')),
+                        );
+                        return;
+                      }
+
+                      final productId = widget.productId;
+                      final variationId = selectedVariationId;
+                      final productName = widget.name;
+                      final imageUrl = widget.image;
+
+                      // Lấy giá từ variation nếu có
+                      double price = double.tryParse(widget.price) ?? 0.0;
+                      if (variationId != null && widget.variations != null) {
+                        final selectedVariation = widget.variations!
+                            .firstWhere((v) => v['id'] == variationId, orElse: () => <String, dynamic>{});
+                        if (selectedVariation.isNotEmpty && selectedVariation['price'] != null) {
+                          price = (selectedVariation['price'] as num).toDouble();
+                        }
+                      }
+
+                      await CartService.addToCart(CartItem(
+                        productId: productId,
+                        variationId: variationId,
+                        productName: productName,
+                        imageUrl: imageUrl,
+                        quantity: 1,
+                        price: price,
+                      ));
+
+                      // Hiển thị thông báo thành công
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Added to cart successfully!')),
                       );
-                      // Xử lý thêm vào giỏ hàng
+                      // Chuyển sang trang giỏ hàng nếu muốn
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const CartScreen()));
                     },
                     child: const Text(
                       'ADD TO SHOPPING BAG',

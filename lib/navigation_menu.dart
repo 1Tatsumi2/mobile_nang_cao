@@ -5,7 +5,7 @@ import 'package:do_an_mobile/features/shop/screens/home/home.dart';
 
 import 'package:do_an_mobile/features/shop/screens/story/story.dart';
 
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/profile_screen.dart';
 
 
 

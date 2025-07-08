@@ -2,45 +2,43 @@
 
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ProfileNotification extends StatelessWidget{
-
-  final List<Map<String, dynamic>> notifications = [
-    {
-      'type':  'order',
-      'title': 'Order Delivered',
-      'message': 'Your order #1234 has been delivered successfully!',
-      'time': '2 mins ago',
-      'read': false,
-      'icon' : Icons.local_shipping_outlined,
-      'iconColor': TColors.success,
-    },
-
-    {
-      'type':  'promo',
-      'title': 'Special Offer',
-      'message': 'Get 50% OFF on all electronics this weekend!',
-      'time': '1 hours ago',
-      'read': false,
-      'icon' : Icons.local_offer_outlined,
-      'iconColor': TColors.primary,
-    },
-
-    {
-      'type':  'payment',
-      'title': 'Payment Successful',
-      'message': 'Payment of \$2999.99 was successfully.',
-      'time': '3 hours ago',
-      'read': false,
-      'icon' : Icons.payment_outlined,
-      'iconColor': TColors.primary,
-    },
-  ];
+class ProfileNotificationScreen extends StatelessWidget {
+  const ProfileNotificationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String, dynamic>> notifications = [
+      {
+        'type': 'order',
+        'title': 'Order Delivered',
+        'message': 'Your order #1234 has been delivered successfully!',
+        'time': '2 mins ago',
+        'read': false,
+        'icon': Icons.local_shipping_outlined,
+        'iconColor': TColors.success,
+      },
+      {
+        'type': 'promo',
+        'title': 'Special Offer',
+        'message': 'Get 50% OFF on all electronics this weekend!',
+        'time': '1 hours ago',
+        'read': false,
+        'icon': Icons.local_offer_outlined,
+        'iconColor': TColors.primary,
+      },
+      {
+        'type': 'payment',
+        'title': 'Payment Successful',
+        'message': 'Payment of \$2999.99 was successful.',
+        'time': '3 hours ago',
+        'read': true,
+        'icon': Icons.payment_outlined,
+        'iconColor': TColors.primary,
+      },
+    ];
+
     return Scaffold(
       backgroundColor: TColors.primaryBackground,
       body: CustomScrollView(
@@ -60,8 +58,8 @@ class ProfileNotification extends StatelessWidget{
               ),
               child: FlexibleSpaceBar(
                 centerTitle: true,
-                titlePadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                title: Text("Notifications",
+                titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                title: const Text("Notifications",
                   style: TextStyle(
                     color: TColors.light,
                     fontWeight: TSizes.fontWeightBold,
@@ -78,7 +76,7 @@ class ProfileNotification extends StatelessWidget{
                         width: 150,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: TColors.light.withOpacity(0.1),
+                          color: TColors.light.withValues(alpha: 0.2),
                         ),
                       ), 
                     ),
@@ -88,8 +86,10 @@ class ProfileNotification extends StatelessWidget{
             ),
             actions: [
               IconButton(
-                onPressed: () {}, 
-                icon: Icon(
+                onPressed: () {
+                  // Mark all as read functionality
+                }, 
+                icon: const Icon(
                   Icons.done_all,
                   color: TColors.light,
                 ),
@@ -99,20 +99,20 @@ class ProfileNotification extends StatelessWidget{
           SliverToBoxAdapter(
             child: ListView.builder(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: notifications.length,
               itemBuilder: (context, index) {
                 final notification = notifications[index];
                 return Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: notification['read'] ?  Colors.white54 : TColors.light,
+                    color: notification['read'] ? TColors.light.withValues(alpha: 0.8) : TColors.light,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: TColors.dark.withOpacity(0.1),
+                        color: TColors.dark.withValues(alpha: 0.1),
                         blurRadius: 20,
-                        offset: Offset(0, 5),
+                        offset: const Offset(0, 5),
                       ),
                     ],  
                   ),
@@ -120,23 +120,25 @@ class ProfileNotification extends StatelessWidget{
                     leading: Stack(
                       children: [
                         Container(
-                          padding: EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: (notification['iconColor'] as Color).withOpacity(0.1),
+                            color: (notification['iconColor'] as Color).withValues(alpha: 0.1),
                           ),
                           child: Icon(
                             notification['icon'] as IconData,
                             color: notification['iconColor'] as Color,
-                            size: TSizes.iconLg,
+                            size: TSizes.iconMd,
                           ),
                         ),
                         if(!notification['read'])
                         Positioned(
+                          right: 0,
+                          top: 0,
                           child: Container(
                             height: 8,
                             width: 8,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: TColors.primary,
                               shape: BoxShape.circle,
                             ),
@@ -147,57 +149,58 @@ class ProfileNotification extends StatelessWidget{
                     title: Text(
                       notification['title'] as String,
                       style: TextStyle(
-                        fontWeight: notification['read'] ? TSizes.fontWeightNormal: TSizes.fontWeightBold,
+                        fontWeight: notification['read'] ? TSizes.fontWeightNormal : TSizes.fontWeightBold,
                         color: TColors.primary,
                       ),
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(notification['message'] as String,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: TColors.textPrimary,
                             fontSize: TSizes.fontSizeSm,
                           ),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(notification['time'] as String,
-                          style: TextStyle(
-                            color: TColors.textPrimary,
-                            fontSize: TSizes.fontSizeSm,
+                          style: const TextStyle(
+                            color: TColors.textSecondary,
+                            fontSize: TSizes.fontSizeXs,
                           ),
                         ),
                       ],
                     ),
                     trailing: IconButton(
                       onPressed: () {
-                        showModalBottomSheet(context: context, 
-                          shape: RoundedRectangleBorder(
+                        showModalBottomSheet(
+                          context: context, 
+                          shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                           ),
                           builder: (context) => Container(
-                            padding: EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(16),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 ListTile(
-                                  leading: Icon(Icons.mark_email_read_outlined),
-                                  title: Text("Mark as read"),
+                                  leading: const Icon(Icons.mark_email_read_outlined),
+                                  title: const Text("Mark as read"),
                                   onTap: () {
                                     Navigator.pop(context);
                                   },
                                 ),
                                 ListTile(
-                                  leading: Icon(Icons.delete_outlined),
-                                  title: Text("Delete notification"),
+                                  leading: const Icon(Icons.delete_outlined),
+                                  title: const Text("Delete notification"),
                                   onTap: () {
                                     Navigator.pop(context);
                                   },
                                 ),
                                 ListTile(
-                                  leading: Icon(Icons.block_outlined),
-                                  title: Text("Turn off notification"),
+                                  leading: const Icon(Icons.block_outlined),
+                                  title: const Text("Turn off notification"),
                                   onTap: () {
                                     Navigator.pop(context);
                                   },
@@ -207,11 +210,11 @@ class ProfileNotification extends StatelessWidget{
                           ),
                         );
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.more_horiz,
                         color: TColors.textSecondary,
-                        ),
                       ),
+                    ),
                   ),
                 );
               }
