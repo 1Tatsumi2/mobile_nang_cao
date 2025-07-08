@@ -1,7 +1,4 @@
 import 'package:do_an_mobile/features/authentication/screens/onboarding/onboarding.dart';
-import 'package:do_an_mobile/features/shop/screens/cart/widgets/order_tracking_screen.dart';
-import 'package:do_an_mobile/features/shop/screens/home/home.dart';
-import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_order_screen.dart';
 import 'package:do_an_mobile/utils/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/get_navigation.dart';

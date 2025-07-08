@@ -31,7 +31,7 @@ class HeaderDelegate extends SliverPersistentHeaderDelegate {
     // Thêm controller cho search
     final TextEditingController searchController = TextEditingController();
 
-    Future<void> _onSearch(String value) async {
+    Future<void> onSearch(String value) async {
       if (value.trim().isEmpty) return;
       final products = await ProductService.searchProducts(searchTerm: value.trim());
       Navigator.push(
@@ -91,7 +91,7 @@ class HeaderDelegate extends SliverPersistentHeaderDelegate {
                       height: 44,
                       child: TextFormField(
                         controller: searchController,
-                        onFieldSubmitted: _onSearch, // <-- thêm dòng này
+                        onFieldSubmitted: onSearch, // <-- thêm dòng này
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Iconsax.search_normal),
                           hintText: 'Search in Store',

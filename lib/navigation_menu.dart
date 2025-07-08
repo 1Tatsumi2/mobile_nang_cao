@@ -2,12 +2,10 @@
 
 import 'package:do_an_mobile/features/shop/screens/home/home.dart';
 
-
 import 'package:do_an_mobile/features/shop/screens/story/story.dart';
 
 import 'package:do_an_mobile/features/shop/screens/profile/profile_screen.dart';
-
-
+import 'package:do_an_mobile/features/shop/screens/wishlist/wishlist.dart';
 
 import 'package:do_an_mobile/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
@@ -132,7 +130,7 @@ class NavigationController extends GetxController {
   final screens = [
     const HomeScreen(),
     const StoryScreen(),
-    Container(color: Colors.orange),
+    const WishlistScreen(),
     const ProfileScreen(),
   ];
 }
