@@ -473,9 +473,9 @@ class _OrderPaymentSectionState extends State<OrderPaymentSection> {
         final totalDiscountFromAPI = data['totalDiscount'] ?? 0.0;
 
         print('Order created successfully!');
-        print('Membership discount: \$${membershipDiscountFromAPI}');
-        print('Coupon discount: \$${couponDiscountFromAPI}');
-        print('Total discount: \$${totalDiscountFromAPI}');
+        print('Membership discount: \$$membershipDiscountFromAPI');
+        print('Coupon discount: \$$couponDiscountFromAPI');
+        print('Total discount: \$$totalDiscountFromAPI');
         print('Shipping address saved: $savedAddress');
 
         if (paymentMethod.toLowerCase() == 'cod') {
