@@ -7,7 +7,6 @@ import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_notifi
 import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_order_screen.dart';
 import 'package:do_an_mobile/services/user_service.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
-import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:do_an_mobile/features/shop/screens/profile/widget/change_password_screen.dart';
 import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_warranty_screen.dart';
 

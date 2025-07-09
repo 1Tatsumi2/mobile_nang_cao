@@ -1,11 +1,9 @@
 import 'package:do_an_mobile/features/shop/screens/cart/widgets/order_tracking_screen.dart';
-import 'package:do_an_mobile/features/shop/screens/home/home.dart';
 import 'package:do_an_mobile/navigation_menu.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:do_an_mobile/widgets/gradient_button.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 
 class OrderDetailScreen extends StatelessWidget {
   const OrderDetailScreen ({ super.key });
