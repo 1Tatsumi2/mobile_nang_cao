@@ -8,6 +8,8 @@ import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_order_
 import 'package:do_an_mobile/services/user_service.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/change_password_screen.dart';
+import 'package:do_an_mobile/features/shop/screens/profile/widget/profile_warranty_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -583,185 +585,203 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
       );
     }
 
+    // Cách 2: Wrap toàn bộ content trong SafeArea
     return Scaffold(
       backgroundColor: TColors.light,
-      body: RefreshIndicator(
-        onRefresh: _refreshProfile,
-        color: TColors.primary,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Stack(
-            children: [
-              _buildHeaderSection(),
-              
-              Padding(
-                padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.height * 0.15,
-                ),
-                child: Column(
-                  children: [
-                    _buildUserInfoCard(),
-                    
-                    const SizedBox(height: 24),
-                    
-                    _buildStatisticsSection(),
-                    
-                    const SizedBox(height: 24),
-                    
-                    _buildMenuSection(
-                      title: 'Account Settings',
-                      items: [
-                        _buildMenuItem(
-                          icon: Icons.person_outlined,
-                          title: 'Personal Details',
-                          subtitle: 'Update your personal information',
-                          onTap: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ProfileDetailScreen(),
-                              ),
-                            );
-                            await _refreshProfile();
-                          },
-                          color: TColors.primary,
-                        ),
-                        _buildMenuItem(
-                          icon: Icons.notifications_outlined,
-                          title: 'Notifications',
-                          subtitle: 'Manage your notifications',
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ProfileNotificationScreen(),
-                              ),
-                            );
-                          },
-                          color: TColors.primary,
-                          isLast: true,
-                        ),
-                      ],
-                    ),
-                    
-                    _buildMenuSection(
-                      title: 'My Activity',
-                      items: [
-                        _buildMenuItem(
-                          icon: Icons.shopping_bag_outlined,
-                          title: 'Your Orders',
-                          subtitle: 'View your order history',
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ProfileOrderScreen(),
-                              ),
-                            );
-                          },
-                          color: Colors.blue,
-                        ),
-                        _buildMenuItem(
-                          icon: Icons.location_on_outlined,
-                          title: 'Addresses',
-                          subtitle: 'Manage your addresses',
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ProfileAddressScreen(),
-                              ),
-                            );
-                          },
-                          color: Colors.green,
-                        ),
-                        _buildMenuItem(
-                          icon: Icons.payment_outlined,
-                          title: 'Payment Methods',
-                          subtitle: 'Manage your payment options',
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Payment methods feature coming soon!'),
-                              ),
-                            );
-                          },
-                          color: Colors.orange,
-                          isLast: true,
-                        ),
-                      ],
-                    ),
-                    
-                    _buildMenuSection(
-                      title: 'More Options',
-                      items: [
-                        _buildMenuItem(
-                          icon: Icons.settings_outlined,
-                          title: 'Settings',
-                          subtitle: 'App preferences and settings',
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Settings feature coming soon!'),
-                              ),
-                            );
-                          },
-                          color: Colors.grey,
-                        ),
-                        _buildMenuItem(
-                          icon: Icons.help_outlined,
-                          title: 'Help & Support',
-                          subtitle: 'Get help and contact us',
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Help & Support feature coming soon!'),
-                              ),
-                            );
-                          },
-                          color: Colors.grey,
-                        ),
-                        _buildMenuItem(
-                          icon: Icons.logout,
-                          title: 'Log Out',
-                          subtitle: 'Sign out from your account',
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: const Text('Confirm Logout'),
-                                content: const Text('Are you sure you want to log out?'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      _logout();
-                                    },
-                                    child: const Text(
-                                      'Log Out',
-                                      style: TextStyle(color: Colors.red),
+      body: SafeArea( // 🔹 THÊM SAFEAREA
+        child: RefreshIndicator(
+          onRefresh: _refreshProfile,
+          color: TColors.primary,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Stack(
+              children: [
+                _buildHeaderSection(),
+                
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.15,
+                  ),
+                  child: Column(
+                    children: [
+                      _buildUserInfoCard(),
+                      
+                      const SizedBox(height: 24),
+                      
+                      _buildStatisticsSection(),
+                      
+                      const SizedBox(height: 24),
+                      
+                      _buildMenuSection(
+                        title: 'Account Settings',
+                        items: [
+                          _buildMenuItem(
+                            icon: Icons.person_outlined,
+                            title: 'Personal Details',
+                            subtitle: 'Update your personal information',
+                            onTap: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ProfileDetailScreen(),
+                                ),
+                              );
+                              await _refreshProfile();
+                            },
+                            color: TColors.primary,
+                          ),
+                          _buildMenuItem(
+                            icon: Icons.notifications_outlined,
+                            title: 'Notifications',
+                            subtitle: 'Manage your notifications',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ProfileNotificationScreen(),
+                                ),
+                              );
+                            },
+                            color: TColors.primary,
+                            isLast: true,
+                          ),
+                        ],
+                      ),
+                      
+                      _buildMenuSection(
+                        title: 'My Activity',
+                        items: [
+                          _buildMenuItem(
+                            icon: Icons.shopping_bag_outlined,
+                            title: 'Your Orders',
+                            subtitle: 'View your order history',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ProfileOrderScreen(),
+                                ),
+                              );
+                            },
+                            color: Colors.blue,
+                          ),
+                          _buildMenuItem(
+                            icon: Icons.location_on_outlined,
+                            title: 'Addresses',
+                            subtitle: 'Manage your addresses',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ProfileAddressScreen(),
+                                ),
+                              );
+                            },
+                            color: Colors.green,
+                          ),
+                          _buildMenuItem(
+                            icon: Icons.shield_outlined,
+                            title: 'Warranties',
+                            subtitle: 'Manage warranty requests',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ProfileWarrantyScreen(),
+                                ),
+                              );
+                            },
+                            color: Colors.purple,
+                            isLast: true,
+                          ),
+                        ],
+                      ),
+                      
+                      _buildMenuSection(
+                        title: 'More Options',
+                        items: [
+                          _buildMenuItem(
+                            icon: Icons.settings_outlined,
+                            title: 'Settings',
+                            subtitle: 'App preferences and settings',
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Settings feature coming soon!'),
+                                ),
+                              );
+                            },
+                            color: Colors.grey,
+                          ),
+                          _buildMenuItem(
+                            icon: Icons.lock_outline,
+                            title: 'Change Password',
+                            subtitle: 'Update your account password',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ChangePasswordScreen(),
+                                ),
+                              );
+                            },
+                            color: Colors.orange,
+                          ),
+                          _buildMenuItem(
+                            icon: Icons.help_outlined,
+                            title: 'Help & Support',
+                            subtitle: 'Get help and contact us',
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Help & Support feature coming soon!'),
+                                ),
+                              );
+                            },
+                            color: Colors.grey,
+                          ),
+                          _buildMenuItem(
+                            icon: Icons.logout,
+                            title: 'Log Out',
+                            subtitle: 'Sign out from your account',
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('Confirm Logout'),
+                                  content: const Text('Are you sure you want to log out?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('Cancel'),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                          color: Colors.red,
-                          isDestructive: true,
-                          isLast: true,
-                        ),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: 24),
-                  ],
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                        _logout();
+                                      },
+                                      child: const Text(
+                                        'Log Out',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            color: Colors.red,
+                            isDestructive: true,
+                            isLast: true,
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

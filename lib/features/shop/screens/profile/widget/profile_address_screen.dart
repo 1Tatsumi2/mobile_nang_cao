@@ -160,10 +160,8 @@ class _ProfileAddressScreenState extends State<ProfileAddressScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (context) => const ProfileScreen()),
-              (Route<dynamic> route) => false,
-            );
+            // 🔹 SỬA LẠI: Chỉ pop về trang trước thay vì pushAndRemoveUntil
+            Navigator.pop(context);
           },
         ),
         actions: [
