@@ -296,4 +296,198 @@ class AuthService {
     await prefs.remove(_userProfileKey);
     print('✅ User profile cache cleared');
   }
+
+  // 🔹 THÊM FORGOT PASSWORD URL
+  static const String forgotPasswordUrl = '${ApiConstants.accountApi}/ForgotPassword';
+  static const String resetPasswordUrl = '${ApiConstants.accountApi}/ResetPassword';
+  static const String verifyTokenUrl = '${ApiConstants.accountApi}/VerifyResetToken';
+
+  // 🔹 API GỬI EMAIL FORGOT PASSWORD
+  static Future<Map<String, dynamic>> forgotPassword(String email) async {
+    try {
+      print('🔄 Sending forgot password request for: $email');
+      
+      final response = await http.post(
+        Uri.parse(forgotPasswordUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'Email': email}),
+      );
+      
+      print('ForgotPassword URL: $forgotPasswordUrl');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        
+        if (data['success'] == true) {
+          print('✅ Forgot password email sent successfully');
+          return {
+            'success': true,
+            'message': data['message'] ?? 'Password reset email sent successfully'
+          };
+        }
+      }
+      
+      // Nếu không thành công, parse error message
+      final errorData = jsonDecode(response.body);
+      return {
+        'success': false,
+        'message': errorData['message'] ?? 'Failed to send reset email'
+      };
+    } catch (e) {
+      print('❌ Forgot password error: $e');
+      return {
+        'success': false,
+        'message': 'Network error: $e'
+      };
+    }
+  }
+
+  // 🔹 API RESET PASSWORD
+  static Future<Map<String, dynamic>> resetPassword({
+    required String email,
+    required String token,
+    required String newPassword,
+  }) async {
+    try {
+      print('🔄 Resetting password for: $email');
+      
+      final response = await http.post(
+        Uri.parse(resetPasswordUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'Email': email,
+          'Token': token,
+          'NewPassword': newPassword,
+        }),
+      );
+      
+      print('ResetPassword URL: $resetPasswordUrl');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        
+        if (data['success'] == true) {
+          print('✅ Password reset successfully');
+          return {
+            'success': true,
+            'message': data['message'] ?? 'Password reset successfully'
+          };
+        }
+      }
+      
+      final errorData = jsonDecode(response.body);
+      return {
+        'success': false,
+        'message': errorData['message'] ?? 'Failed to reset password',
+        'errors': errorData['errors']
+      };
+    } catch (e) {
+      print('❌ Reset password error: $e');
+      return {
+        'success': false,
+        'message': 'Network error: $e'
+      };
+    }
+  }
+
+  // 🔹 API VERIFY RESET TOKEN
+  static Future<Map<String, dynamic>> verifyResetToken({
+    required String email,
+    required String token,
+  }) async {
+    try {
+      print('🔄 Verifying reset token for: $email');
+      
+      final response = await http.post(
+        Uri.parse(verifyTokenUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'Email': email,
+          'Token': token,
+        }),
+      );
+      
+      print('VerifyToken URL: $verifyTokenUrl');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        
+        if (data['success'] == true) {
+          print('✅ Token verified successfully');
+          return data;
+        }
+      }
+      
+      final errorData = jsonDecode(response.body);
+      return {
+        'success': false,
+        'message': errorData['message'] ?? 'Invalid token'
+      };
+    } catch (e) {
+      print('❌ Verify token error: $e');
+      return {
+        'success': false,
+        'message': 'Network error: $e'
+      };
+    }
+  }
+
+  // 🔹 THÊM CHANGE PASSWORD URL
+  static const String changePasswordUrl = '${ApiConstants.accountApi}/ChangePassword';
+
+  // 🔹 API ĐỔI MẬT KHẨU
+  static Future<Map<String, dynamic>> changePassword({
+    required String email,
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      print('🔄 Changing password for: $email');
+      
+      final response = await http.post(
+        Uri.parse(changePasswordUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'Email': email,
+          'CurrentPassword': currentPassword,
+          'NewPassword': newPassword,
+        }),
+      );
+      
+      print('ChangePassword URL: $changePasswordUrl');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        
+        if (data['success'] == true) {
+          print('✅ Password changed successfully');
+          return {
+            'success': true,
+            'message': data['message'] ?? 'Password changed successfully'
+          };
+        }
+      }
+      
+      final errorData = jsonDecode(response.body);
+      return {
+        'success': false,
+        'message': errorData['message'] ?? 'Failed to change password',
+        'errors': errorData['errors']
+      };
+    } catch (e) {
+      print('❌ Change password error: $e');
+      return {
+        'success': false,
+        'message': 'Network error: $e'
+      };
+    }
+  }
 }

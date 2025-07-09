@@ -22,6 +22,15 @@ class _TLoginFormState extends State<TLoginForm> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _isPasswordVisible = false; // 🔹 THÊM BIẾN ĐIỀU KHIỂN HIỂN THỊ PASSWORD
+  bool _rememberMe = false; // 🔹 THÊM BIẾN REMEMBER ME
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,22 +43,33 @@ class _TLoginFormState extends State<TLoginForm> {
             /// Email/Username
             TextFormField(
               controller: _usernameController,
+              enabled: !_isLoading, // 🔹 DISABLE KHI ĐANG LOADING
               decoration: const InputDecoration(
                 prefixIcon: Icon(Iconsax.direct_right),
                 labelText: TTexts.email,
               ),
-              validator: (value) => value == null || value.isEmpty ? 'Enter username' : null,
+              validator: (value) => value == null || value.isEmpty ? 'Enter username or email' : null,
             ),
             const SizedBox(height: TSizes.spaceBtwInputFields),
 
             /// Password
             TextFormField(
               controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                prefixIcon: Icon(Iconsax.password_check),
+              enabled: !_isLoading, // 🔹 DISABLE KHI ĐANG LOADING
+              obscureText: !_isPasswordVisible, // 🔹 SỬA LẠI: ĐIỀU KHIỂN BẰNG BIẾN
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Iconsax.password_check),
                 labelText: TTexts.password,
-                suffixIcon: Icon(Iconsax.eye_slash),
+                suffixIcon: IconButton( // 🔹 SỬA LẠI: DÙNG ICONBUTTON
+                  icon: Icon(
+                    _isPasswordVisible ? Iconsax.eye : Iconsax.eye_slash,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
+                ),
               ),
               validator: (value) => value == null || value.isEmpty ? 'Enter password' : null,
             ),
@@ -62,14 +82,21 @@ class _TLoginFormState extends State<TLoginForm> {
                 /// Remember me
                 Row(
                   children: [
-                    Checkbox(value: true, onChanged: (value) {}),
+                    Checkbox(
+                      value: _rememberMe, // 🔹 SỬA LẠI: DÙNG BIẾN
+                      onChanged: _isLoading ? null : (value) { // 🔹 DISABLE KHI LOADING
+                        setState(() {
+                          _rememberMe = value ?? false;
+                        });
+                      },
+                    ),
                     const Text(TTexts.rememberMe),
                   ],
                 ),
 
                 /// Forgot Password
                 TextButton(
-                  onPressed: () => Get.to(() => const ForgetPassword()),
+                  onPressed: _isLoading ? null : () => Get.to(() => const ForgetPassword()), // 🔹 DISABLE KHI LOADING
                   child: const Text(TTexts.forgotPassword),
                 ),
               ],
@@ -80,34 +107,17 @@ class _TLoginFormState extends State<TLoginForm> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _isLoading ? null : () async {
-                  if (_formKey.currentState!.validate()) {
-                    setState(() => _isLoading = true);
-                    try {
-                      final result = await AuthService.login(
-                        _usernameController.text,
-                        _passwordController.text,
-                      );
-                      if (result['success'] == true) {
-                        // Đăng nhập thành công, chuyển trang
-                        Get.offAll(() => const NavigationMenu());
-                      } else {
-                        // Đăng nhập thất bại
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(result['message'] ?? 'Login failed')),
-                        );
-                      }
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(e.toString())),
-                      );
-                    }
-                    setState(() => _isLoading = false);
-                  }
-                },
+                onPressed: _isLoading ? null : _handleLogin, // 🔹 EXTRACT THÀNH METHOD RIÊNG
                 child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text(TTexts.signIn),
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Text(TTexts.signIn),
               ),
             ),
             const SizedBox(height: TSizes.spaceBtwItems),
@@ -116,13 +126,65 @@ class _TLoginFormState extends State<TLoginForm> {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
-                onPressed: () => Get.to(() => const SignupScreen()),
-                child: Text(TTexts.createAccount),
+                onPressed: _isLoading ? null : () => Get.to(() => const SignupScreen()), // 🔹 DISABLE KHI LOADING
+                child: const Text(TTexts.createAccount),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  // 🔹 EXTRACT LOGIN LOGIC THÀNH METHOD RIÊNG
+  Future<void> _handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+    
+    try {
+      final result = await AuthService.login(
+        _usernameController.text.trim(),
+        _passwordController.text,
+      );
+      
+      if (result['success'] == true) {
+        // 🔹 ĐĂNG NHẬP THÀNH CÔNG
+        Get.snackbar(
+          'Success',
+          'Welcome back!',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+        );
+        
+        // Chuyển trang sau khi hiển thị thông báo
+        Future.delayed(const Duration(milliseconds: 500), () {
+          Get.offAll(() => const NavigationMenu());
+        });
+      } else {
+        // 🔹 ĐĂNG NHẬP THẤT BẠI
+        Get.snackbar(
+          'Login Failed',
+          result['message'] ?? 'Invalid username or password',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
+        );
+      }
+    } catch (e) {
+      // 🔹 LỖI NETWORK HOẶC EXCEPTION
+      Get.snackbar(
+        'Error',
+        'An error occurred: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 }
