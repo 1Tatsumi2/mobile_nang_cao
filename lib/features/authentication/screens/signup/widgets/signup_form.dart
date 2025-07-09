@@ -22,6 +22,18 @@ class _TSignupFormState extends State<TSignupForm> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _isPasswordVisible = false; // 🔹 THÊM BIẾN ĐIỀU KHIỂN HIỂN THỊ PASSWORD
+
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _usernameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,25 +41,30 @@ class _TSignupFormState extends State<TSignupForm> {
       key: _formKey,
       child: Column(
         children: [
+          /// First Name & Last Name
           Row(
             children: [
               Expanded(
                 child: TextFormField(
                   controller: _firstNameController,
+                  enabled: !_isLoading, // 🔹 DISABLE KHI ĐANG LOADING
                   decoration: const InputDecoration(
                     labelText: TTexts.firstName,
                     prefixIcon: Icon(Iconsax.user),
                   ),
+                  validator: (value) => value == null || value.isEmpty ? 'Enter first name' : null,
                 ),
               ),
               const SizedBox(width: TSizes.spaceBtwInputFields),
               Expanded(
                 child: TextFormField(
                   controller: _lastNameController,
+                  enabled: !_isLoading, // 🔹 DISABLE KHI ĐANG LOADING
                   decoration: const InputDecoration(
                     labelText: TTexts.lastName,
                     prefixIcon: Icon(Iconsax.user),
                   ),
+                  validator: (value) => value == null || value.isEmpty ? 'Enter last name' : null,
                 ),
               ),
             ],
@@ -57,42 +74,77 @@ class _TSignupFormState extends State<TSignupForm> {
           /// Username
           TextFormField(
             controller: _usernameController,
+            enabled: !_isLoading, // 🔹 DISABLE KHI ĐANG LOADING
             decoration: const InputDecoration(
               labelText: TTexts.username,
               prefixIcon: Icon(Iconsax.user_edit),
             ),
+            validator: (value) {
+              if (value == null || value.isEmpty) return 'Enter username';
+              if (value.length < 3) return 'Username must be at least 3 characters';
+              return null;
+            },
           ),
           const SizedBox(height: TSizes.spaceBtwInputFields),
 
           /// Email
           TextFormField(
             controller: _emailController,
+            enabled: !_isLoading, // 🔹 DISABLE KHI ĐANG LOADING
+            keyboardType: TextInputType.emailAddress,
             decoration: const InputDecoration(
               labelText: TTexts.email,
               prefixIcon: Icon(Iconsax.direct),
             ),
+            validator: (value) {
+              if (value == null || value.isEmpty) return 'Enter email';
+              if (!GetUtils.isEmail(value)) return 'Enter a valid email';
+              return null;
+            },
           ),
           const SizedBox(height: TSizes.spaceBtwInputFields),
 
           /// Phone Number
           TextFormField(
             controller: _phoneController,
+            enabled: !_isLoading, // 🔹 DISABLE KHI ĐANG LOADING
+            keyboardType: TextInputType.phone,
             decoration: const InputDecoration(
               labelText: TTexts.phoneNumber,
               prefixIcon: Icon(Iconsax.call),
             ),
+            validator: (value) {
+              if (value == null || value.isEmpty) return 'Enter phone number';
+              if (value.length < 10) return 'Enter a valid phone number';
+              return null;
+            },
           ),
           const SizedBox(height: TSizes.spaceBtwInputFields),
 
           /// Password
           TextFormField(
             controller: _passwordController,
-            obscureText: true,
-            decoration: const InputDecoration(
+            enabled: !_isLoading, // 🔹 DISABLE KHI ĐANG LOADING
+            obscureText: !_isPasswordVisible, // 🔹 SỬA LẠI: ĐIỀU KHIỂN BẰNG BIẾN
+            decoration: InputDecoration(
               labelText: TTexts.password,
-              prefixIcon: Icon(Iconsax.password_check),
-              suffixIcon: Icon(Iconsax.eye_slash),
+              prefixIcon: const Icon(Iconsax.password_check),
+              suffixIcon: IconButton( // 🔹 SỬA LẠI: DÙNG ICONBUTTON
+                icon: Icon(
+                  _isPasswordVisible ? Iconsax.eye : Iconsax.eye_slash,
+                ),
+                onPressed: _isLoading ? null : () { // 🔹 DISABLE KHI LOADING
+                  setState(() {
+                    _isPasswordVisible = !_isPasswordVisible;
+                  });
+                },
+              ),
             ),
+            validator: (value) {
+              if (value == null || value.isEmpty) return 'Enter password';
+              if (value.length < 6) return 'Password must be at least 6 characters';
+              return null;
+            },
           ),
           const SizedBox(height: TSizes.spaceBtwSections),
 
@@ -104,46 +156,81 @@ class _TSignupFormState extends State<TSignupForm> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed:
-                  _isLoading
-                      ? null
-                      : () async {
-                        if (_formKey.currentState!.validate()) {
-                          setState(() => _isLoading = true);
-                          try {
-                            final result = await AuthService.register(
-                              username: _usernameController.text,
-                              email: _emailController.text,
-                              phone: _phoneController.text,
-                              password: _passwordController.text,
-                            );
-                            if (result['success'] == true) {
-                              // Đăng ký thành công, chuyển sang màn hình xác thực hoặc login
-                              Get.snackbar(
-                                'Success',
-                                result['message'] ?? 'Đăng ký thành công',
-                              );
-                              // Get.to(() => const VerifyEmailScreen());
-                            } else {
-                              Get.snackbar(
-                                'Error',
-                                result['message'] ?? 'Đăng ký thất bại',
-                              );
-                            }
-                          } catch (e) {
-                            Get.snackbar('Error', e.toString());
-                          }
-                          setState(() => _isLoading = false);
-                        }
-                      },
-              child:
-                  _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(TTexts.createAccount),
+              onPressed: _isLoading ? null : _handleSignup, // 🔹 EXTRACT THÀNH METHOD RIÊNG
+              child: _isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(TTexts.createAccount),
             ),
           ),
         ],
       ),
     );
+  }
+
+  // 🔹 EXTRACT SIGNUP LOGIC THÀNH METHOD RIÊNG
+  Future<void> _handleSignup() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+    
+    try {
+      // 🔹 TẠO USERNAME TỪ FIRST NAME + LAST NAME
+      final fullName = '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}';
+      final username = _usernameController.text.trim().isNotEmpty 
+          ? _usernameController.text.trim()
+          : fullName.replaceAll(' ', '').toLowerCase();
+
+      final result = await AuthService.register(
+        username: username,
+        email: _emailController.text.trim(),
+        phone: _phoneController.text.trim(),
+        password: _passwordController.text,
+      );
+      
+      if (result['success'] == true) {
+        // 🔹 ĐĂNG KÝ THÀNH CÔNG
+        Get.snackbar(
+          'Success',
+          result['message'] ?? 'Account created successfully!',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
+        );
+        
+        // Quay lại trang login sau khi đăng ký thành công
+        Future.delayed(const Duration(seconds: 1), () {
+          Get.back(); // Quay lại login screen
+        });
+      } else {
+        // 🔹 ĐĂNG KÝ THẤT BẠI
+        Get.snackbar(
+          'Registration Failed',
+          result['message'] ?? 'Failed to create account',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 4),
+        );
+      }
+    } catch (e) {
+      // 🔹 LỖI NETWORK HOẶC EXCEPTION
+      Get.snackbar(
+        'Error',
+        'An error occurred: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 }
