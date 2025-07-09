@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/constants/api_constants.dart';
-import 'auth_service.dart';
 
 class UserService {
   // Cache cho profile data

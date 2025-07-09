@@ -6,73 +6,66 @@ import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:do_an_mobile/features/shop/screens/cart/cart_screen.dart';
 import 'package:do_an_mobile/utils/constants/api_constants.dart';
+import 'package:do_an_mobile/features/shop/controllers/wishlist_controller.dart'; // 🔹 THÊM IMPORT
+import 'package:get/get.dart'; // 🔹 THÊM IMPORT
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+// 🔹 ĐỔI THÀNH StatefulWidget
 class ProductDetailScreen extends StatefulWidget {
-  final int productId; // Thêm dòng này
+  final int productId;
   final String image;
   final String name;
   final String price;
-  final List<String>? images;
-  final String? description;
-  final List<Map<String, dynamic>>? variations;
+  final List<String> images;
+  final String description;
+  final List<Map<String, dynamic>> variations;
 
   const ProductDetailScreen({
     super.key,
-    required this.productId, // Thêm dòng này
+    required this.productId,
     required this.image,
     required this.name,
     required this.price,
-    this.images,
-    this.description,
-    this.variations,
+    required this.images,
+    required this.description,
+    required this.variations,
   });
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
 }
 
-final List<Map<String, dynamic>> paymentOptions = [
-  {
-    'label': 'Visa',
-    'icon': 'assets/icons/visa.png', // Đặt icon riêng cho từng loại
-  },
-  {'label': 'MasterCard', 'icon': 'assets/icons/mastercard.png'},
-  {'label': 'Apple Pay', 'icon': 'assets/icons/apple_pay.png'},
-  {'label': 'Amazon Pay', 'icon': 'assets/icons/amazon_pay.png'},
-  {'label': 'Amex', 'icon': 'assets/icons/amex.png'},
-  {'label': 'Paypal', 'icon': 'assets/icons/paypal.png'},
-  {'label': 'Discover', 'icon': 'assets/icons/discover.png'},
-  {'label': 'JCB', 'icon': 'assets/icons/jcb.png'},
-];
-
-final List<String> variations = [
-  'assets/images/variations/variation1-removebg.png',
-  'assets/images/variations/variation1-removebg.png',
-  'assets/images/variations/variation1-removebg.png',
-  'assets/images/variations/variation1-removebg.png',
-  'assets/images/variations/variation1-removebg.png',
-  'assets/images/variations/variation1-removebg.png',
-];
-
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  late final PageController _pageController;
+  // 🔹 KHAI BÁO CÁC BIẾN STATE
+  late PageController _pageController;
   int currentIndex = 0;
-  bool isFavorite = false;
-  bool showDetails = false; // Thêm vào State
-  bool showMaterials = false; // Thêm vào State
-  bool showPayment = false; // Thêm vào State
-  bool showPackaging = false; // Thêm vào State
-  bool showVariations = false; // Thêm vào State
+  bool showDetails = false;
+  bool showMaterials = false;
+  bool showPayment = false;
+  bool showPackaging = false;
+  bool showVariations = false;
   int? selectedVariationId;
 
-  List<String> get images => widget.images ?? [widget.image];
+  // 🔹 SỬ DỤNG WishlistController THAY VÌ isFavorite LOCAL
+  late WishlistController wishlistController;
+
+  // Payment options data
+  final List<Map<String, String>> paymentOptions = [
+    {'icon': 'assets/icons/visa.png', 'label': 'Visa'},
+    {'icon': 'assets/icons/mastercard.png', 'label': 'Mastercard'},
+    {'icon': 'assets/icons/american_express.png', 'label': 'American Express'},
+    {'icon': 'assets/icons/paypal.png', 'label': 'PayPal'},
+    {'icon': 'assets/icons/apple_pay.png', 'label': 'Apple Pay'},
+    {'icon': 'assets/icons/google_pay.png', 'label': 'Google Pay'},
+  ];
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: currentIndex);
+    _pageController = PageController();
+    // 🔹 KHỞI TẠO WishlistController
+    wishlistController = Get.put(WishlistController());
   }
 
   @override
@@ -111,29 +104,52 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     ),
                     const Spacer(),
-                    IconButton(
-                      icon: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : Colors.black,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          isFavorite = !isFavorite;
-                        });
-                      },
-                    ),
+                    // 🔹 SỬA ICON WISHLIST
+                    Obx(() {
+                      bool isFavorite = wishlistController.isFavorite(
+                        widget.productId,
+                      );
+                      return IconButton(
+                        icon: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite ? Colors.red : Colors.black,
+                        ),
+                        onPressed: () {
+                          print(
+                            '🔥 Clicked heart in ProductDetail for: ${widget.name} (productId: ${widget.productId})',
+                          );
+
+                          // 🔹 TOGGLE WISHLIST VỚI PRODUCT DATA
+                          wishlistController.toggleWishlist(
+                            widget.productId,
+                            productName: widget.name,
+                            price:
+                                double.tryParse(
+                                  widget.price
+                                      .replaceAll('\$', '')
+                                      .replaceAll(',', ''),
+                                ) ??
+                                0.0,
+                            image: widget.image,
+                            description: widget.description,
+                            variations: widget.variations,
+                          );
+                        },
+                      );
+                    }),
                   ],
                 ),
               ),
+
               // 2. Ảnh sản phẩm với mũi tên trái/phải
               SizedBox(
-                height: 350, // hoặc chiều cao bạn muốn
+                height: 350,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
                     PageView.builder(
                       controller: _pageController,
-                      itemCount: images.length,
+                      itemCount: widget.images.length,
                       onPageChanged: (index) {
                         setState(() {
                           currentIndex = index;
@@ -145,7 +161,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           color: const Color(0xFFE7E7E7),
                           alignment: Alignment.center,
                           child: Image.network(
-                            images[index],
+                            widget.images[index],
                             fit: BoxFit.contain,
                             width: double.infinity,
                             height: 320,
@@ -157,7 +173,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       },
                     ),
                     // Mũi tên trái
-                    if (images.length > 1 && currentIndex > 0)
+                    if (widget.images.length > 1 && currentIndex > 0)
                       Positioned(
                         left: 8,
                         child: IconButton(
@@ -171,7 +187,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                       ),
                     // Mũi tên phải
-                    if (images.length > 1 && currentIndex < images.length - 1)
+                    if (widget.images.length > 1 &&
+                        currentIndex < widget.images.length - 1)
                       Positioned(
                         right: 8,
                         child: IconButton(
@@ -187,11 +204,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ],
                 ),
               ),
+
               // 3. Số thứ tự ảnh
               Padding(
                 padding: const EdgeInsets.only(top: 8, bottom: 8),
                 child: Text(
-                  '${currentIndex + 1} / ${images.length}',
+                  '${currentIndex + 1} / ${widget.images.length}',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -258,82 +276,122 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     AnimatedSize(
                       duration: const Duration(milliseconds: 400),
                       curve: Curves.easeInOut,
-                      child: showVariations && (widget.variations != null && widget.variations!.isNotEmpty)
-                          ? Container(
-                              width: double.infinity,
-                              margin: const EdgeInsets.only(top: 0),
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: Colors.grey.shade300,
-                                  width: 1,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.08),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
+                      child:
+                          showVariations &&
+                                  (widget.variations.isNotEmpty)
+                              ? Container(
+                                width: double.infinity,
+                                margin: const EdgeInsets.only(top: 0),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: Colors.grey.shade300,
+                                    width: 1,
                                   ),
-                                ],
-                              ),
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: widget.variations!.map((variation) {
-                                    final colorName = variation['color']?['name'] ?? '';
-                                    final size = variation['size']?.toString() ?? '';
-                                    final imageFile = variation['image'] ?? variation['imageUrl'];
-                                    final imageUrl = (imageFile != null && imageFile.toString().isNotEmpty)
-                                        ? '${ApiConstants.variationMediaUrl}$imageFile'
-                                        : null;
-                                    final isSelected = selectedVariationId == variation['id'];
-
-                                    return GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          selectedVariationId = variation['id'];
-                                        });
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: isSelected ? Colors.blue : Colors.transparent,
-                                            width: 2,
-                                          ),
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                                        child: Column(
-                                          children: [
-                                            ClipRRect(
-                                              borderRadius: BorderRadius.circular(6),
-                                              child: imageUrl != null
-                                                  ? Image.network(
-                                                      imageUrl,
-                                                      width: 100,
-                                                      height: 100,
-                                                      fit: BoxFit.cover,
-                                                      errorBuilder: (context, error, stackTrace) =>
-                                                          const Icon(Icons.broken_image, size: 40),
-                                                    )
-                                                  : const Icon(Icons.broken_image, size: 40),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Text(
-                                              '$colorName - Size $size',
-                                              style: const TextStyle(fontSize: 14),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.08),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            )
-                          : const SizedBox.shrink(),
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children:
+                                        widget.variations.map((variation) {
+                                          final colorName =
+                                              variation['color']?['name'] ?? '';
+                                          final size =
+                                              variation['size']?.toString() ??
+                                              '';
+                                          final imageFile =
+                                              variation['image'] ??
+                                              variation['imageUrl'];
+                                          final imageUrl =
+                                              (imageFile != null &&
+                                                      imageFile
+                                                          .toString()
+                                                          .isNotEmpty)
+                                                  ? '${ApiConstants.variationMediaUrl}$imageFile'
+                                                  : null;
+                                          final isSelected =
+                                              selectedVariationId ==
+                                              variation['id'];
+
+                                          return GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                selectedVariationId =
+                                                    variation['id'];
+                                              });
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color:
+                                                      isSelected
+                                                          ? Colors.blue
+                                                          : Colors.transparent,
+                                                  width: 2,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              margin:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                  ),
+                                              child: Column(
+                                                children: [
+                                                  ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          6,
+                                                        ),
+                                                    child:
+                                                        imageUrl != null
+                                                            ? Image.network(
+                                                              imageUrl,
+                                                              width: 100,
+                                                              height: 100,
+                                                              fit: BoxFit.cover,
+                                                              errorBuilder:
+                                                                  (
+                                                                    context,
+                                                                    error,
+                                                                    stackTrace,
+                                                                  ) => const Icon(
+                                                                    Icons
+                                                                        .broken_image,
+                                                                    size: 40,
+                                                                  ),
+                                                            )
+                                                            : const Icon(
+                                                              Icons
+                                                                  .broken_image,
+                                                              size: 40,
+                                                            ),
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Text(
+                                                    '$colorName - Size $size',
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                  ),
+                                ),
+                              )
+                              : const SizedBox.shrink(),
                     ),
                   ],
                 ),
@@ -404,9 +462,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     ),
                     onPressed: () async {
-                      if (widget.variations != null && widget.variations!.isNotEmpty && selectedVariationId == null) {
+                      if (widget.variations.isNotEmpty &&
+                          selectedVariationId == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please select a variation!')),
+                          const SnackBar(
+                            content: Text('Please select a variation!'),
+                          ),
                         );
                         return;
                       }
@@ -418,29 +479,40 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                       // Lấy giá từ variation nếu có
                       double price = double.tryParse(widget.price) ?? 0.0;
-                      if (variationId != null && widget.variations != null) {
-                        final selectedVariation = widget.variations!
-                            .firstWhere((v) => v['id'] == variationId, orElse: () => <String, dynamic>{});
-                        if (selectedVariation.isNotEmpty && selectedVariation['price'] != null) {
-                          price = (selectedVariation['price'] as num).toDouble();
+                      if (variationId != null) {
+                        final selectedVariation = widget.variations.firstWhere(
+                          (v) => v['id'] == variationId,
+                          orElse: () => <String, dynamic>{},
+                        );
+                        if (selectedVariation.isNotEmpty &&
+                            selectedVariation['price'] != null) {
+                          price =
+                              (selectedVariation['price'] as num).toDouble();
                         }
                       }
 
-                      await CartService.addToCart(CartItem(
-                        productId: productId,
-                        variationId: variationId,
-                        productName: productName,
-                        imageUrl: imageUrl,
-                        quantity: 1,
-                        price: price,
-                      ));
+                      await CartService.addToCart(
+                        CartItem(
+                          productId: productId,
+                          variationId: variationId,
+                          productName: productName,
+                          imageUrl: imageUrl,
+                          quantity: 1,
+                          price: price,
+                        ),
+                      );
 
                       // Hiển thị thông báo thành công
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Added to cart successfully!')),
+                        const SnackBar(
+                          content: Text('Added to cart successfully!'),
+                        ),
                       );
                       // Chuyển sang trang giỏ hàng nếu muốn
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const CartScreen()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const CartScreen()),
+                      );
                     },
                     child: const Text(
                       'ADD TO SHOPPING BAG',
@@ -739,21 +811,42 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                             spacing: 24,
                                             runSpacing: 12,
                                             children:
-                                                paymentOptions.map((option) {
+                                                paymentOptions.map((
+                                                  Map<String, String> option,
+                                                ) {
                                                   return SizedBox(
                                                     width: 140,
                                                     child: Row(
                                                       children: [
                                                         Image.asset(
-                                                          option['icon'],
+                                                          option['icon']!, // 🔹 DÙNG ! VÌ ĐÃ ĐẢM BẢO NON-NULL
                                                           width: 28,
                                                           height: 18,
                                                           fit: BoxFit.contain,
+                                                          errorBuilder: (
+                                                            context,
+                                                            error,
+                                                            stackTrace,
+                                                          ) {
+                                                            return Container(
+                                                              width: 28,
+                                                              height: 18,
+                                                              color:
+                                                                  Colors
+                                                                      .grey[300],
+                                                              child: const Icon(
+                                                                Icons.payment,
+                                                                size: 16,
+                                                              ),
+                                                            );
+                                                          },
                                                         ),
                                                         const SizedBox(
                                                           width: 8,
                                                         ),
-                                                        Text(option['label']),
+                                                        Text(
+                                                          option['label']!,
+                                                        ), // 🔹 DÙNG ! VÌ ĐÃ ĐẢM BẢO NON-NULL
                                                       ],
                                                     ),
                                                   );

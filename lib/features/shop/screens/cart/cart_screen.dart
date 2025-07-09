@@ -1,7 +1,5 @@
-import 'dart:convert';
 import 'package:do_an_mobile/features/shop/screens/cart/models/cart_item.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:do_an_mobile/utils/constants/api_constants.dart';
 import 'package:do_an_mobile/services/product_service.dart';
 import 'package:do_an_mobile/services/cart_service.dart';
