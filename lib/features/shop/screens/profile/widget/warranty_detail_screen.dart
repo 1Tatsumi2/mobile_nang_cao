@@ -4,6 +4,8 @@ import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:do_an_mobile/services/warranty_service.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // 🔹 THÊM IMPORT
 
 class WarrantyDetailScreen extends StatefulWidget {
   final Map<String, dynamic> warranty;
@@ -693,24 +695,72 @@ class _WarrantyDetailScreenState extends State<WarrantyDetailScreen> {
     );
   }
 
-  void _cancelWarranty() {
-    // Show loading
-    Get.dialog(
-      const Center(child: CircularProgressIndicator()),
-      barrierDismissible: false,
-    );
-    
-    // Simulate API call
-    Future.delayed(const Duration(seconds: 2), () {
-      Get.back(); // Close loading
-      Get.back(); // Go back to warranty list
-      Get.snackbar(
-        'Success',
-        'Warranty request has been cancelled',
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
+  void _cancelWarranty() async {
+    try {
+      // Show loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
       );
-    });
+      
+      // 🔹 LẤY EMAIL TỪ SHAREDPREFERENCES
+      final prefs = await SharedPreferences.getInstance();
+      final userEmail = prefs.getString('user_email');
+      
+      if (userEmail == null) {
+        Navigator.pop(context); // Close loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('User email not found. Please login again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+      
+      final warrantyId = warrantyData['id'] as int;
+      
+      print('🔄 Canceling warranty - Email: $userEmail, WarrantyId: $warrantyId');
+      
+      final result = await WarrantyService.cancelWarranty(
+        email: userEmail,
+        warrantyId: warrantyId,
+      );
+      
+      Navigator.pop(context); // Close loading
+      
+      if (result['success'] == true) {
+        // Go back to warranty list
+        Navigator.pop(context);
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message'] ?? 'Warranty request has been cancelled'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message'] ?? 'Failed to cancel warranty request'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      Navigator.pop(context); // Close loading
+      print('❌ Cancel warranty error: $e');
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Color _getStatusColor(String statusColor) {

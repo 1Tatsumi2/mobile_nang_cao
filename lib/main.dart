@@ -1,7 +1,8 @@
 import 'package:do_an_mobile/features/authentication/screens/onboarding/onboarding.dart';
 import 'package:do_an_mobile/utils/theme/theme.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/get_navigation.dart';
+import 'package:get/get.dart';
+import 'package:do_an_mobile/controllers/cart_controller.dart'; // 🔹 IMPORT
 
 /// ---------------- Entry point of Flutter App ----------------
 
@@ -25,7 +26,15 @@ class App extends StatelessWidget {
       themeMode: ThemeMode.system,
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,
-      home: const OnBoardingScreen(),
+      title: 'MERDI Store',
+      // ...existing configuration...
+
+      // 🔹 KHỞI TẠO DEPENDENCIES
+      initialBinding: BindingsBuilder(() {
+        Get.put(CartController()); // 🔹 ĐĂNG KÝ CART CONTROLLER
+      }),
+
+      home: const OnBoardingScreen(), // 🔹 HOẶC WIDGET GỐC CỦA BẠN
     );
   }
 }

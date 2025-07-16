@@ -5,6 +5,8 @@ import 'package:do_an_mobile/features/shop/screens/cart/models/checkout_request.
 import 'package:do_an_mobile/services/auth_service.dart';
 import 'package:do_an_mobile/services/cart_service.dart';
 import 'package:do_an_mobile/services/coupon_service.dart';
+import 'package:get/get.dart';
+import 'package:do_an_mobile/controllers/cart_controller.dart';
 
 class OrderPaymentSection extends StatefulWidget {
   final List<CartItem> cartItems;
@@ -447,20 +449,19 @@ class _OrderPaymentSectionState extends State<OrderPaymentSection> {
         imageUrl: item.imageUrl,
       )).toList();
 
-      // 🔹 SỬA: TRUYỀN couponDiscount THAY VÌ discount VÀ THÊM couponCode
       final request = CheckoutRequest(
         paymentMethod: selectedPayment,
         userEmail: userEmail,
         cartItems: cartItemsData,
         shippingPrice: widget.shipping,
-        discountAmount: couponDiscount, // Chỉ truyền coupon discount
+        discountAmount: couponDiscount,
         shippingAddress: widget.shippingAddress!,
-        couponCode: appliedCouponCode, // Truyền coupon code
+        couponCode: appliedCouponCode,
       );
 
       final result = await CheckoutService.processCheckout(request);
 
-      Navigator.pop(context);
+      Navigator.pop(context); // Đóng loading dialog
 
       if (result['success'] == true) {
         final data = result['data'];
@@ -478,20 +479,55 @@ class _OrderPaymentSectionState extends State<OrderPaymentSection> {
         print('Total discount: \$$totalDiscountFromAPI');
         print('Shipping address saved: $savedAddress');
 
+        // 🔹 XÓA CART VÀ CẬP NHẬT CART CONTROLLER NGAY LẬP TỨC
+        try {
+          final cartController = Get.find<CartController>();
+          await cartController.clearCartAndUpdate();
+          print('✅ Cart cleared and updated');
+        } catch (e) {
+          print('❌ Error clearing cart: $e');
+        }
+
+        // 🔹 XỬ LÝ THEO PAYMENT METHOD
         if (paymentMethod.toLowerCase() == 'cod') {
-          await _clearCartAndShowSuccess(orderCode);
+          // 🔹 COD: HIỂN THỊ SUCCESS DIALOG
+          _showSuccessDialog(context, orderCode, paymentMethod, null);
         } else {
-          await CheckoutService.launchPaymentUrl(redirectUrl);
-          await CartService.clearCart();
-          
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Payment opened in browser. Order Code: $orderCode'),
-              backgroundColor: Colors.blue,
-            ),
-          );
-          
-          Navigator.popUntil(context, (route) => route.isFirst);
+          // 🔹 STRIPE/PAYPAL: TỰ ĐỘNG MỞ TRANG THANH TOÁN
+          if (redirectUrl != null && redirectUrl.isNotEmpty) {
+            try {
+              print('🔗 Auto-opening payment URL: $redirectUrl');
+              await CheckoutService.launchPaymentUrl(redirectUrl);
+              
+              // 🔹 HIỂN THỊ THÔNG BÁO NGẮN VÀ QUAY VỀ TRANG CHỦ
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Order $orderCode created! Opening payment page...'),
+                  backgroundColor: Colors.green,
+                  duration: const Duration(seconds: 3),
+                ),
+              );
+              
+              // 🔹 QUAY VỀ TRANG CHỦ SAU KHI MỞ PAYMENT
+              Future.delayed(const Duration(seconds: 2), () {
+                Navigator.popUntil(context, (route) => route.isFirst);
+              });
+              
+            } catch (e) {
+              print('❌ Error launching payment URL: $e');
+              
+              // 🔹 NẾU KHÔNG MỞ ĐƯỢC PAYMENT URL, HIỂN THỊ DIALOG VỚI NÚT MANUAL
+              _showPaymentErrorDialog(context, orderCode, redirectUrl, e.toString());
+            }
+          } else {
+            // 🔹 KHÔNG CÓ REDIRECT URL
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Payment URL not available'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -513,36 +549,162 @@ class _OrderPaymentSectionState extends State<OrderPaymentSection> {
     }
   }
 
-  Future<void> _clearCartAndShowSuccess(String orderCode) async {
-    await CartService.clearCart();
-    _showOrderConfirmation(orderCode);
-  }
-
-  void _showOrderConfirmation(String orderCode) {
+  // 🔹 DIALOG CHO TRƯỜNG HỢP LỖI MỞ PAYMENT URL
+  void _showPaymentErrorDialog(BuildContext context, String orderCode, String paymentUrl, String error) {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: const Text('Order Placed Successfully!'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
+      builder: (BuildContext dialogContext) => AlertDialog(
+        title: const Row(
           children: [
-            const Icon(Icons.check_circle, color: Colors.green, size: 60),
-            const SizedBox(height: 16),
-            Text('Order Code: $orderCode'),
-            const SizedBox(height: 8),
-            const Text('You will receive a confirmation email shortly.'),
-            // 🔹 THÊM HIỂN THỊ DISCOUNT INFO
-            if (membershipDiscount > 0 || couponDiscount > 0) ...[
-              const SizedBox(height: 8),
-              Text('Total Discount Applied: \$${totalDiscount.toStringAsFixed(2)}'),
-            ],
+            Icon(Icons.warning, color: Colors.orange, size: 30),
+            SizedBox(width: 12),
+            Text('Payment Page Error'),
           ],
         ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Order Code: $orderCode',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              const Text('Your order was created successfully, but we couldn\'t automatically open the payment page.'),
+              const SizedBox(height: 8),
+              Text('Error: $error'),
+            ],
+          ),
+        ),
         actions: [
+          // 🔹 NÚT MỞ PAYMENT MANUAL
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              try {
+                await CheckoutService.launchPaymentUrl(paymentUrl);
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Still cannot open payment: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Try Payment Again'),
+          ),
+          
+          // 🔹 NÚT VỀ TRANG CHỦ
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
+              Navigator.popUntil(context, (route) => route.isFirst);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.grey,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Back to Home'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 🔹 SỬA SUCCESS DIALOG CHỈ DÀNH CHO COD
+  void _showSuccessDialog(BuildContext context, String orderCode, String paymentMethod, String? redirectUrl) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.green, size: 30),
+            SizedBox(width: 12),
+            Text('Order Placed Successfully!'),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Order Code: $orderCode',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text('Payment Method: ${_getPaymentMethodName(paymentMethod)}'),
+              const SizedBox(height: 8),
+              const Text('You will receive a confirmation email shortly.'),
+              
+              // 🔹 HIỂN THỊ DISCOUNT INFO
+              if (membershipDiscount > 0 || couponDiscount > 0) ...[
+                const SizedBox(height: 12),
+                const Divider(),
+                const Text(
+                  'Discounts Applied:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                if (membershipDiscount > 0)
+                  Text('Membership Discount: -\$${membershipDiscount.toStringAsFixed(2)}'),
+                if (couponDiscount > 0)
+                  Text('Coupon Discount: -\$${couponDiscount.toStringAsFixed(2)}'),
+                const SizedBox(height: 4),
+                Text(
+                  'Total Discount: -\$${totalDiscount.toStringAsFixed(2)}',
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                ),
+              ],
+              
+              // 🔹 HIỂN THỊ TOTAL
+              const SizedBox(height: 12),
+              const Divider(),
+              Text(
+                'Total: \$${estimatedTotal.toStringAsFixed(2)}',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              
+              // 🔹 THÔNG BÁO CHO COD
+              if (paymentMethod.toLowerCase() == 'cod') ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blue.shade200),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.info, color: Colors.blue, size: 20),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'You will pay cash when the order is delivered.',
+                          style: TextStyle(color: Colors.blue, fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        actions: [
+          // 🔹 CHỈ CÓ NÚT CONTINUE SHOPPING CHO COD
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
               Navigator.popUntil(context, (route) => route.isFirst);
             },
             style: ElevatedButton.styleFrom(
@@ -556,21 +718,73 @@ class _OrderPaymentSectionState extends State<OrderPaymentSection> {
     );
   }
 
-  // Apply coupon method
-  Future<void> _applyCoupon() async {
-    // 🔹 KIỂM TRA USER ĐĂNG NHẬP
-    final isLoggedIn = await AuthService.isLoggedIn();
-    if (!isLoggedIn) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please login to apply coupon'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
+  // 🔹 HELPER METHOD ĐỂ HIỂN THỊ TÊN PAYMENT METHOD
+  String _getPaymentMethodName(String paymentMethod) {
+    switch (paymentMethod.toLowerCase()) {
+      case 'stripe':
+        return 'Credit Card (Stripe)';
+      case 'paypal':
+        return 'PayPal';
+      case 'cod':
+        return 'Cash on Delivery';
+      default:
+        return paymentMethod;
     }
+  }
 
-    if (couponController.text.trim().isEmpty) {
+  // 🔹 THÊM CÁC HELPER METHODS BỊ THIẾU
+  Widget _buildSummaryRow(String label, String value, {Color? color, bool isTotal = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: isTotal ? 16 : 14,
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+            color: color ?? Colors.black,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: isTotal ? 16 : 14,
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+            color: color ?? Colors.black,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value, {bool isTotal = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+            color: Colors.grey[700],
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+            color: isTotal ? Colors.black : Colors.grey[700],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // 🔹 APPLY COUPON METHOD
+  Future<void> _applyCoupon() async {
+    final couponCode = couponController.text.trim();
+    if (couponCode.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter a coupon code'),
@@ -585,35 +799,27 @@ class _OrderPaymentSectionState extends State<OrderPaymentSection> {
     });
 
     try {
-      print('🔹 STARTING APPLY COUPON');
-      print('Coupon Code: ${couponController.text.trim()}');
-      print('Subtotal: $subtotal');
+      final userEmail = await AuthService.getCurrentUserEmail();
+      if (userEmail == null) {
+        throw Exception('User not logged in');
+      }
+
+      final result = await CouponService.applyCoupon(couponCode, subtotal);
       
-      final result = await CouponService.applyCoupon(
-        couponController.text.trim(),
-        subtotal,
-      );
-
-      print('🔹 COUPON SERVICE RESULT: $result');
-
-      if (result['success'] == true) {
-        final data = result['data'];
-        print('🔹 COUPON DATA: $data');
-        
+      if (result['success']) {
         setState(() {
-          couponDiscount = (data['discountAmount'] as num).toDouble();
-          appliedCouponCode = data['couponCode'];
-          appliedCouponId = data['couponId'] ?? 0; // 🔹 LƯU COUPON ID
+          couponDiscount = result['discountAmount'].toDouble();
+          appliedCouponCode = couponCode;
+          appliedCouponId = result['couponId'] ?? 0;
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(data['message'] ?? 'Coupon applied successfully!'),
+            content: Text('Coupon applied! Discount: \$${couponDiscount.toStringAsFixed(2)}'),
             backgroundColor: Colors.green,
           ),
         );
       } else {
-        print('🔹 COUPON ERROR: ${result['error']}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(result['error'] ?? 'Failed to apply coupon'),
@@ -622,7 +828,6 @@ class _OrderPaymentSectionState extends State<OrderPaymentSection> {
         );
       }
     } catch (e) {
-      print('🔹 COUPON EXCEPTION: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: $e'),
@@ -636,81 +841,20 @@ class _OrderPaymentSectionState extends State<OrderPaymentSection> {
     }
   }
 
-  // Remove coupon method
-  Future<void> _removeCoupon() async {
-    try {
-      final result = await CouponService.removeCoupon();
+  // 🔹 REMOVE COUPON METHOD
+  void _removeCoupon() {
+    setState(() {
+      couponDiscount = 0.0;
+      appliedCouponCode = '';
+      appliedCouponId = 0;
+      couponController.clear();
+    });
 
-      if (result['success'] == true) {
-        setState(() {
-          couponDiscount = 0.0;
-          appliedCouponCode = '';
-          appliedCouponId = 0; // 🔹 RESET COUPON ID
-          couponController.clear();
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Coupon removed successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error removing coupon: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  Widget _buildDetailRow(String label, String value, {bool isTotal = false}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: isTotal ? 16 : 14,
-            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            color: isTotal ? Colors.black : Colors.grey[700],
-          ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: isTotal ? 16 : 14,
-            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            color: isTotal ? Colors.black : Colors.grey[700],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSummaryRow(String label, String value, {bool isTotal = false, Color? color}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: isTotal ? 16 : 14,
-            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            color: color ?? (isTotal ? Colors.black : Colors.grey[700]),
-          ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: isTotal ? 16 : 14,
-            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            color: color ?? (isTotal ? Colors.black : Colors.grey[700]),
-          ),
-        ),
-      ],
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Coupon removed'),
+        backgroundColor: Colors.orange,
+      ),
     );
   }
 
