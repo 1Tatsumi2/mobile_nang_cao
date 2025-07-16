@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:do_an_mobile/utils/constants/api_constants.dart';
 import 'package:do_an_mobile/services/product_service.dart';
 import 'package:do_an_mobile/services/cart_service.dart';
-import 'package:do_an_mobile/features/shop/screens/cart/models/checkout_request.dart'; // 🔹 THÊM IMPORT
+import 'package:do_an_mobile/features/shop/screens/cart/models/checkout_request.dart';
+import 'package:do_an_mobile/controllers/cart_controller.dart'; // 🔹 THÊM
+import 'package:get/get.dart'; // 🔹 THÊM
 
 import 'widgets/cart_header.dart';
 import 'widgets/shipping_information.dart';
@@ -21,13 +23,19 @@ class _CartScreenState extends State<CartScreen> {
   late Future<List<dynamic>> productsFuture;
   double? _shippingPrice;
   bool _isShippingSubmitted = false;
-  ShippingAddressData? _shippingAddress; // 🔹 SỬ DỤNG TỪ checkout_request.dart
+  ShippingAddressData? _shippingAddress;
+
+  // 🔹 THÊM CART CONTROLLER
+  late CartController cartController;
 
   @override
   void initState() {
     super.initState();
     cartItemsFuture = CartService.getCart();
     productsFuture = ProductService.fetchProducts();
+    
+    // 🔹 KHỞI TẠO CART CONTROLLER
+    cartController = Get.find<CartController>();
   }
 
   @override
@@ -144,12 +152,14 @@ class _CartScreenState extends State<CartScreen> {
                                                 const SizedBox(width: 12),
                                                 Container(width: 1, height: 16, color: Colors.black),
                                                 const SizedBox(width: 12),
-                                                // Nút Remove (có thể gọi API xóa ở đây)
+                                                // 🔹 SỬA NÚT REMOVE ĐỂ CẬP NHẬT CART CONTROLLER
                                                 TextButton(
                                                   onPressed: () async {
                                                     await CartService.removeFromCart(item.productId, item.variationId);
+                                                    // 🔹 CẬP NHẬT CART CONTROLLER
+                                                    await cartController.loadCartItems();
                                                     setState(() {
-                                                      cartItemsFuture = CartService.getCart(); // Gán lại để FutureBuilder reload
+                                                      cartItemsFuture = CartService.getCart();
                                                     });
                                                   },
                                                   style: TextButton.styleFrom(
@@ -166,7 +176,7 @@ class _CartScreenState extends State<CartScreen> {
                                       // Số lượng và giá
                                       Column(
                                         children: [
-                                          // Dropdown chọn số lượng
+                                          // 🔹 SỬA DROPDOWN ĐỂ CẬP NHẬT CART CONTROLLER
                                           DropdownButton<int>(
                                             value: item.quantity,
                                             items: List.generate(
@@ -180,6 +190,8 @@ class _CartScreenState extends State<CartScreen> {
                                               if (newQty != null) {
                                                 // Cập nhật số lượng trong CartService
                                                 await CartService.updateQuantity(item.productId, item.variationId, newQty);
+                                                // 🔹 CẬP NHẬT CART CONTROLLER
+                                                await cartController.loadCartItems();
                                                 setState(() {
                                                   cartItemsFuture = CartService.getCart();
                                                 });
@@ -213,7 +225,7 @@ class _CartScreenState extends State<CartScreen> {
                                     _isShippingSubmitted = isSubmitted;
                                   });
                                 },
-                                onShippingAddressChanged: (address) { // 🔹 CALLBACK NHẬN ShippingAddressData
+                                onShippingAddressChanged: (address) {
                                   setState(() {
                                     _shippingAddress = address;
                                   });
@@ -230,7 +242,7 @@ class _CartScreenState extends State<CartScreen> {
                                 cartItems: cartItems,
                                 shipping: _shippingPrice ?? 0.0,
                                 isShippingSubmitted: _isShippingSubmitted,
-                                shippingAddress: _shippingAddress, // 🔹 TRUYỀN ĐỊA CHỈ
+                                shippingAddress: _shippingAddress,
                               ),
                               const SizedBox(height: 24),
                             ],

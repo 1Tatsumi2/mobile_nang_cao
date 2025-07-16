@@ -45,11 +45,21 @@ class CheckoutService {
   }
 
   static Future<void> launchPaymentUrl(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
-      throw Exception('Could not launch payment URL');
+    try {
+      final Uri uri = Uri.parse(url);
+      
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication, // Mở trong browser
+        );
+        print('✅ Payment URL launched successfully');
+      } else {
+        throw Exception('Cannot launch URL: $url');
+      }
+    } catch (e) {
+      print('❌ Error launching payment URL: $e');
+      throw e;
     }
   }
 }

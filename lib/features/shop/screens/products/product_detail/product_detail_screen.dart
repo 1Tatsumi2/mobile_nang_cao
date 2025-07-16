@@ -1,6 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:do_an_mobile/features/shop/screens/cart/models/cart_item.dart';
+import 'package:do_an_mobile/controllers/cart_controller.dart'; // 🔹 IMPORT
+import 'package:do_an_mobile/features/shop/screens/cart/models/cart_item.dart'; // 🔹 IMPORT
 import 'package:do_an_mobile/services/cart_service.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool showPackaging = false;
   bool showVariations = false;
   int? selectedVariationId;
+  
+  // 🔹 THÊM BIẾN QUANTITY
+  int quantity = 1;
+  
+  // 🔹 THÊM BIẾN SELECTED VARIATION
+  Map<String, dynamic>? selectedVariation;
 
   // 🔹 SỬ DỤNG WishlistController THAY VÌ isFavorite LOCAL
   late WishlistController wishlistController;
@@ -327,7 +334,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                               setState(() {
                                                 selectedVariationId =
                                                     variation['id'];
+                                                selectedVariation = variation; // 🔹 LƯU VARIATION ĐÃ CHỌN
                                               });
+                                              
+                                              print('🎯 Selected variation: ${variation['id']} - ${variation['color']?['name']} - Size ${variation['size']}');
                                             },
                                             child: Container(
                                               decoration: BoxDecoration(
@@ -457,62 +467,100 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.black,
                       foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     onPressed: () async {
-                      if (widget.variations.isNotEmpty &&
-                          selectedVariationId == null) {
+                      // 🔹 KIỂM TRA VARIATION ĐÃ CHỌN CHƯA
+                      if (selectedVariationId == null || selectedVariation == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Please select a variation!'),
+                            content: Text('Please select size and color'),
+                            backgroundColor: Colors.red,
                           ),
                         );
                         return;
                       }
 
-                      final productId = widget.productId;
-                      final variationId = selectedVariationId;
-                      final productName = widget.name;
-                      final imageUrl = widget.image;
-
-                      // Lấy giá từ variation nếu có
-                      double price = double.tryParse(widget.price) ?? 0.0;
-                      if (variationId != null) {
-                        final selectedVariation = widget.variations.firstWhere(
-                          (v) => v['id'] == variationId,
-                          orElse: () => <String, dynamic>{},
-                        );
-                        if (selectedVariation.isNotEmpty &&
-                            selectedVariation['price'] != null) {
-                          price =
-                              (selectedVariation['price'] as num).toDouble();
+                      try {
+                        // 🔹 CHUẨN BỊ DỮ LIỆU
+                        int productId = widget.productId;
+                        int? variationId = selectedVariationId!;
+                        String productName = widget.name;
+                        String imageUrl = widget.image;
+                        
+                        // 🔹 XỬ LÝ GIÁ TỪ VARIATION HOẶC WIDGET
+                        double price;
+                        if (selectedVariation!['price'] != null) {
+                          price = (selectedVariation!['price'] as num).toDouble();
+                        } else {
+                          String priceStr = widget.price.replaceAll('\$', '').replaceAll(',', '');
+                          price = double.tryParse(priceStr) ?? 0.0;
                         }
-                      }
 
-                      await CartService.addToCart(
-                        CartItem(
+                        // 🔹 TẠO CART ITEM
+                        final cartItem = CartItem(
                           productId: productId,
                           variationId: variationId,
                           productName: productName,
                           imageUrl: imageUrl,
-                          quantity: 1,
+                          quantity: quantity,
                           price: price,
-                        ),
-                      );
+                        );
 
-                      // Hiển thị thông báo thành công
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Added to cart successfully!'),
-                        ),
-                      );
-                      // Chuyển sang trang giỏ hàng nếu muốn
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const CartScreen()),
-                      );
+                        // 🔹 THÊM VÀO CART SERVICE (PHƯƠNG THỨC CŨ)
+                        await CartService.addToCart(cartItem);
+                        
+                        // 🔹 CẬP NHẬT CART CONTROLLER ĐỂ ICON HIỂN THỊ SỐ ĐÚNG
+                        final cartController = Get.find<CartController>();
+                        await cartController.loadCartItems();
+
+                        // 🔹 HIỂN THỊ THÔNG BÁO THÀNH CÔNG
+                        if (mounted) {
+                          // 🔹 ẨN SNACKBAR CŨ NẾU CÓ
+                          ScaffoldMessenger.of(context).clearSnackBars();
+                          
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('$productName added to cart'),
+                              backgroundColor: Colors.green,
+                              duration: const Duration(seconds: 4), // 🔹 TĂNG THỜI GIAN ĐỂ DỄ CLICK
+                              behavior: SnackBarBehavior.floating, // 🔹 THÊM ĐỂ DỄ CLICK HƠN
+                              action: SnackBarAction(
+                                label: 'View Cart',
+                                textColor: Colors.white,
+                                backgroundColor: Colors.green[700], // 🔹 THÊM BACKGROUND ĐỂ DỄ NHÌN
+                                onPressed: () {
+                                  print('🛒 View Cart button clicked'); // 🔹 DEBUG
+                                  // 🔹 ẨN SNACKBAR TRƯỚC KHI NAVIGATE
+                                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                  
+                                  // 🔹 DELAY NHẸ ĐỂ ĐẢM BẢO UI ỔN ĐỊNH
+                                  Future.delayed(const Duration(milliseconds: 100), () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (_) => const CartScreen()),
+                                    );
+                                  });
+                                },
+                              ),
+                            ),
+                          );
+                        }
+                        
+                      } catch (e) {
+                        print('❌ Error adding to cart: $e');
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to add to cart: $e'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
                     },
                     child: const Text(
                       'ADD TO SHOPPING BAG',

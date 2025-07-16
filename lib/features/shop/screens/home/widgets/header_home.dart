@@ -3,8 +3,10 @@ import 'package:do_an_mobile/features/shop/screens/products/products_screen.dart
 import 'package:do_an_mobile/services/product_service.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
+import 'package:do_an_mobile/controllers/cart_controller.dart'; // 🔹 THÊM IMPORT
 import 'package:flutter/material.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
+import 'package:get/get.dart'; // 🔹 THÊM IMPORT
 
 class HeaderDelegate extends SliverPersistentHeaderDelegate {
   final double _minExtent;
@@ -38,7 +40,7 @@ class HeaderDelegate extends SliverPersistentHeaderDelegate {
         context,
         MaterialPageRoute(
           builder: (_) => ProductsScreen(
-            gender: "All", // hoặc truyền gì phù hợp
+            gender: "All",
             products: products.cast<Map<String, dynamic>>(),
           ),
         ),
@@ -91,7 +93,7 @@ class HeaderDelegate extends SliverPersistentHeaderDelegate {
                       height: 44,
                       child: TextFormField(
                         controller: searchController,
-                        onFieldSubmitted: onSearch, // <-- thêm dòng này
+                        onFieldSubmitted: onSearch,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Iconsax.search_normal),
                           hintText: 'Search in Store',
@@ -99,7 +101,7 @@ class HeaderDelegate extends SliverPersistentHeaderDelegate {
                           fillColor: TColors.white,
                           contentPadding: EdgeInsets.symmetric(
                             vertical: 8,
-                          ), // Thêm dòng này
+                          ),
                           border: OutlineInputBorder(
                             borderSide: BorderSide.none,
                             borderRadius: BorderRadius.all(
@@ -118,46 +120,54 @@ class HeaderDelegate extends SliverPersistentHeaderDelegate {
                   ),
                 ),
                 const SizedBox(width: 12),
-                // Icon cart luôn hiện
-                Stack(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const CartScreen(),
-                          ),
-                        );
-                      },
-                      icon: const Icon(
-                        Iconsax.shopping_bag,
-                        color: TColors.white,
-                      ),
-                    ),
-                    Positioned(
-                      right: 0,
-                      child: Container(
-                        width: 18,
-                        height: 18,
-                        decoration: BoxDecoration(
-                          color: TColors.black,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '2',
-                            style: Theme.of(
+                // 🔹 CART ICON VỚI COUNTER THỰC TẾ
+                GetX<CartController>(
+                  init: CartController(), // 🔹 KHỞI TẠO CONTROLLER
+                  builder: (cartController) {
+                    return Stack(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.push(
                               context,
-                            ).textTheme.labelLarge!.apply(
-                              color: TColors.white,
-                              fontSizeFactor: 0.8,
+                              MaterialPageRoute(
+                                builder: (context) => const CartScreen(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(
+                            Iconsax.shopping_bag,
+                            color: TColors.white,
+                          ),
+                        ),
+                        // 🔹 BADGE VỚI SỐ LƯỢNG THỰC TẾ
+                        if (cartController.cartItemCount > 0)
+                          Positioned(
+                            right: 0,
+                            child: Container(
+                              width: 18,
+                              height: 18,
+                              decoration: BoxDecoration(
+                                color: TColors.error, // 🔹 ĐỔI MÀU ĐỂ NỔI BẬT HƠN
+                                borderRadius: BorderRadius.circular(100),
+                                border: Border.all(color: TColors.white, width: 1),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '${cartController.cartItemCount > 99 ? "99+" : cartController.cartItemCount}', // 🔹 SỐ LƯỢNG THỰC TẾ
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelLarge!.apply(
+                                    color: TColors.white,
+                                    fontSizeFactor: 0.8,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
-                  ],
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
