@@ -67,9 +67,11 @@ class WarrantyService {
           'message': data['message'] ?? 'Warranty request submitted successfully'
         };
       } else {
+        // 🔹 TRUYỀN CHI TIẾT MESSAGE TỪ SERVER
         return {
           'success': false,
-          'message': data['message'] ?? 'Failed to submit warranty request'
+          'message': data['message'] ?? 'Failed to submit warranty request',
+          'statusCode': response.statusCode
         };
       }
     } catch (e) {
@@ -94,11 +96,12 @@ class WarrantyService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'Email': email,
-          'WarrantyId': warrantyId,
+          'WarrantyId': warrantyId, 
         }),
       );
       
       print('CancelWarranty URL: $cancelWarrantyUrl');
+      print('Request body: ${jsonEncode({'Email': email, 'WarrantyId': warrantyId})}');
       print('Response status: ${response.statusCode}');
       print('Response body: ${response.body}');
       

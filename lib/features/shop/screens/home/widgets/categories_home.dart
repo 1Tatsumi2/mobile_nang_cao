@@ -1,4 +1,3 @@
-
 import 'package:do_an_mobile/features/shop/screens/products/products_screen.dart';
 import 'package:do_an_mobile/services/product_service.dart';
 import 'package:flutter/material.dart';
@@ -40,12 +39,12 @@ class TCategories extends StatelessWidget {
               // Women's Handbags
               final products = await ProductService.searchProducts(
                 category: "Women's",
-                brand: "HandBags",
+                brand: "Handbags",
               );
               Get.to(() => ProductsScreen(
                 gender: "Women's",
                 products: products.cast<Map<String, dynamic>>(),
-                category: "HandBags",
+                category: "Handbags",
               ));
             } else if (index == 1) {
               // Women's Shoes
