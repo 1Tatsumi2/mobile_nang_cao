@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:do_an_mobile/services/warranty_service.dart';
 import 'package:do_an_mobile/services/auth_service.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';
-import 'package:do_an_mobile/utils/constants/sizes.dart';
 import 'package:get/get.dart';
 import 'package:iconsax_flutter/iconsax_flutter.dart';
 import 'warranty_detail_screen.dart';

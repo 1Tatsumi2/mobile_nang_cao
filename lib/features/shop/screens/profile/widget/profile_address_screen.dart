@@ -1,4 +1,3 @@
-import 'package:do_an_mobile/features/shop/screens/profile/profile_screen.dart';
 import 'package:do_an_mobile/services/user_service.dart';
 import 'package:do_an_mobile/services/auth_service.dart';
 import 'package:do_an_mobile/utils/constants/colors.dart';

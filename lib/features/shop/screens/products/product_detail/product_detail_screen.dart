@@ -9,8 +9,6 @@ import 'package:do_an_mobile/features/shop/screens/cart/cart_screen.dart';
 import 'package:do_an_mobile/utils/constants/api_constants.dart';
 import 'package:do_an_mobile/features/shop/controllers/wishlist_controller.dart'; // 🔹 THÊM IMPORT
 import 'package:get/get.dart'; // 🔹 THÊM IMPORT
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 // 🔹 ĐỔI THÀNH StatefulWidget
 class ProductDetailScreen extends StatefulWidget {

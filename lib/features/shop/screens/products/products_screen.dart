@@ -415,7 +415,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                   ),
                                 ],
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
                       ),
@@ -461,7 +461,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                   ),
                                 ],
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
                       ),

@@ -3,7 +3,6 @@ import 'package:do_an_mobile/features/shop/screens/cart/models/cart_item.dart';
 import 'package:do_an_mobile/services/checkout_service.dart';
 import 'package:do_an_mobile/features/shop/screens/cart/models/checkout_request.dart';
 import 'package:do_an_mobile/services/auth_service.dart';
-import 'package:do_an_mobile/services/cart_service.dart';
 import 'package:do_an_mobile/services/coupon_service.dart';
 import 'package:get/get.dart';
 import 'package:do_an_mobile/controllers/cart_controller.dart';

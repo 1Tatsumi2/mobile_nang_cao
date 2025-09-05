@@ -2,7 +2,6 @@ import 'package:do_an_mobile/features/authentication/screens/login/login.dart';
 import 'package:do_an_mobile/services/auth_service.dart';
 import 'package:do_an_mobile/utils/constants/image_strings.dart';
 import 'package:do_an_mobile/utils/constants/sizes.dart';
-import 'package:do_an_mobile/utils/constants/text_strings.dart';
 import 'package:do_an_mobile/utils/helpers/helper_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

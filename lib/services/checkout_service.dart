@@ -59,7 +59,7 @@ class CheckoutService {
       }
     } catch (e) {
       print('❌ Error launching payment URL: $e');
-      throw e;
+      rethrow;
     }
   }
 }

@@ -3,7 +3,6 @@ import 'package:do_an_mobile/features/shop/screens/products/widgets/list_product
 import 'package:do_an_mobile/utils/constants/api_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:do_an_mobile/features/shop/controllers/wishlist_controller.dart';
 
 class WishlistScreen extends StatefulWidget {
